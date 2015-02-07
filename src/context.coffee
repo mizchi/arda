@@ -4,6 +4,8 @@ module.exports =
 class Context extends EventEmitter
   constructor: ->
     super
+    @_owner = null # injected at mounted
+    React.createFactory(@constructor.component)
 
   _initTemplatePropsByController: (@props) -> new Promise (done) =>
     Promise.resolve(@initState(@props))
@@ -12,10 +14,19 @@ class Context extends EventEmitter
       .then (templateProps) =>
         done(templateProps)
 
-  # Props -> Promise<State>
-  updateState: (state) ->
+  # State -> Promise<void>
+  updateState: (state) -> new Promise (done) =>
     @state = state
-    @emit 'state-updated', @state
+    console.log 'updateState:', state, !!@_owner
+    if @_owner?
+      Promise.resolve(@expandTemplate(@props, @state))
+      .then (template) =>
+        console.log 'updateState:template', template
+        @_owner.setState(activeContext: @, activeProps: template)
+        # @_owner.forceUpdate()
+        done()
+    else
+      done()
 
   # Override
   # Props -> Promise<State>

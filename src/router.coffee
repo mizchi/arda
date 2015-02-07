@@ -73,29 +73,27 @@ class Router
   #  Context * Object  => Thenable<void>
   _mount: (context, initialProps) -> new Promise (done) =>
     context._initTemplatePropsByController(initialProps).then (templateProps) =>
-      activeComponent =
-        React.withContext {shared: context}, ->
-          React.createFactory(context.constructor.component)(templateProps)
-
-      @_renderOrUpdate(activeComponent).then => done()
+      @_renderOrUpdate(context, templateProps).then => done()
 
   #  () => Thenable<void>
   _unmountAll: ->
     @_renderOrUpdate(null)
 
   #  React.Element => Thenable<void>
-  _renderOrUpdate: (activeComponent) -> new Promise (done) =>
+  _renderOrUpdate: (activeContext, props) -> new Promise (done) =>
     # render
     if !@_component? and @el?
       @_component = React.render @_layout, @el
+      activeContext._owner = @_component
 
     # setState
-    if @_component?
-      @_component.setState {activeComponent}
+    if @el?
+      @_component.setState {activeContext, activeProps: props}
     else
       # for test
-      if activeComponent?
-        @innerHTML = React.renderToString activeComponent
+      if activeContext
+        rendered = React.createFactory(activeContext.constructor.component)(props)
+        @innerHTML = React.renderToString rendered
       else
         @innerHTML = ''
     done()
@@ -105,6 +103,12 @@ class Router
     context = new contextClass
     context.subscribe (eventName, fn) =>
       context.on eventName, fn
+
+    # context.on 'internal:state-updated', (state) =>
+    #   @_lock()
+    #   @_component.setState state
+    #   console.log 'state-updated!'
+
     context
 
   _unlock: -> @_locked = false

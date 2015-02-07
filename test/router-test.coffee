@@ -174,7 +174,7 @@ describe "src/router", ->
             done()
 
   context 'with DOM', ->
-    it 'replace internal on second', (done) ->
+    it 'render', (done) ->
       class Context1 extends Ow.Context
         @component: class Test extends Ow.Component
           render: -> React.createElement 'div', {className: 'content'}, @props.name
@@ -182,5 +182,18 @@ describe "src/router", ->
       router.pushContext(Context1, {name: 1}).then ->
         assert $$(document.body.innerHTML)('.content').text() is '1'
         router.pushContext(Context1, {name: 2}).then ->
+          assert $$(document.body.innerHTML)('.content').text() is '2'
+          done()
+
+    it 'update', (done) ->
+      class Context1 extends Ow.Context
+        initState: (props) -> props
+        expandTemplate: (props, state) -> state
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {className: 'content'}, @props.name
+
+      router = new Ow.Router Ow.DefaultLayout, document.body
+      router.pushContext(Context1, {name: 1}).then ->
+        router.activeContext.updateState({name: 2}).then =>
           assert $$(document.body.innerHTML)('.content').text() is '2'
           done()
