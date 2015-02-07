@@ -2,11 +2,14 @@
 
 module.exports =
 class Context extends EventEmitter
-  _initTemplatePropsByController: (@props) ->
-    @state = @initState(@props)
-    return @expandTemplate(@props, @state)
+  _initTemplatePropsByController: (@props) -> new Promise (done) =>
+    Promise.resolve(@initState(@props))
+    .then (@state) =>
+      Promise.resolve(@expandTemplate(@props, @state))
+      .then (templateProps) => done(templateProps)
 
   initState: (props) -> props
+
   expandTemplate: (props, state) -> props
 
   root: (component, state, el = null) ->
