@@ -43,6 +43,27 @@ describe "src/router", ->
       router.pushContext(TestContext, {name: 'john'}).then ->
         assert $$(router.renderedHtml)('.name').text() is 'my name is john foo bar'
 
+  describe '#popContext', ->
+    it "throws at blank", (done) ->
+      router = new Ow.Router Ow.DefaultLayout, null
+      router.popContext()
+      .then -> done 1
+      .catch -> done()
+
+    it "dispose last context", (done) ->
+      class Context extends Ow.Context
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {className: 'name'}
+      router = new Ow.Router Ow.DefaultLayout, null
+      router.pushContext(Context, {}).then ->
+        assert router.history.length is 1
+        router.popContext().then ->
+          assert router.history.length is 0
+          assert !router.activeContext?
+          done()
+
+  describe '#replaceContext', ->
+
   describe 'Lifecycle', ->
     it "fires created | started | resumed | disposed", (done) ->
       spy = sinon.spy()
@@ -53,6 +74,7 @@ describe "src/router", ->
           subscribe 'created', -> spy 'created'
           subscribe 'started', -> spy 'started'
           subscribe 'paused' , -> spy 'paused'
+          subscribe 'resumed' , -> spy 'resumed'
 
       class Context2 extends Ow.Context
         @component: class Test extends Ow.Component
@@ -64,7 +86,33 @@ describe "src/router", ->
         assert spy.calledWith('created')
         assert spy.calledWith('started')
         assert spy.callCount is 2
+
         router.pushContext(Context2, {}).then ->
           assert spy.calledWith('paused')
           assert spy.callCount is 3
-          done()
+          router.popContext().then ->
+            assert spy.calledWith('resumed')
+            assert spy.calledWith('started')
+            assert spy.callCount is 5
+            done()
+
+    it "fire disposed", (done) ->
+      class Context1 extends Ow.Context
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {}, ''
+
+      spy = sinon.spy()
+      class Context2 extends Ow.Context
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {}, ''
+
+        subscribe: (subscribe) ->
+          subscribe 'disposed' , -> spy 'disposed'
+
+      router = new Ow.Router Ow.DefaultLayout, null
+      router.pushContext(Context1, {}).then ->
+        router.pushContext(Context2, {}).then ->
+          router.popContext().then ->
+            assert spy.calledWith('disposed')
+            assert spy.callCount is 1
+            done()
