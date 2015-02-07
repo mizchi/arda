@@ -18,7 +18,7 @@ describe "src/router", ->
 
       router = new Ow.Router Ow.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john doe'}).then ->
-        assert $$(router.renderedHtml)('.name').text() is 'my name is john doe'
+        assert $$(router.innerHTML)('.name').text() is 'my name is john doe'
 
     it "will render template with initState and expandTemplate", ->
       class TestContext extends Ow.Context
@@ -28,7 +28,7 @@ describe "src/router", ->
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
       router = new Ow.Router Ow.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john'}).then ->
-        assert $$(router.renderedHtml)('.name').text() is 'my name is john foo bar'
+        assert $$(router.innerHTML)('.name').text() is 'my name is john foo bar'
 
     it "will render template with initState and expandTemplate with Promise", ->
       class TestContext extends Ow.Context
@@ -41,40 +41,7 @@ describe "src/router", ->
 
       router = new Ow.Router Ow.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john'}).then ->
-        assert $$(router.renderedHtml)('.name').text() is 'my name is john foo bar'
-
-  describe '#isLocked', ->
-    it "return true if on pushContext or popContext", (done) ->
-      class TestContext extends Ow.Context
-        expandTemplate: (props, state) -> new Promise (_done) ->
-          setTimeout ->
-            _done {}
-          , 16
-
-        dispose: -> new Promise (_done) =>
-          super
-          setTimeout ->
-            _done {}
-          , 16
-
-        @component: class Test extends Ow.Component
-          render: -> React.createElement 'div', {className: 'name'}
-
-      router = new Ow.Router Ow.DefaultLayout, null
-      pushing = router.pushContext(TestContext, {})
-      assert router.isLocked() is true
-      pushing.then ->
-        assert router.isLocked() is false
-        replacing = router.replaceContext(TestContext, {})
-        assert router.isLocked() is true
-        replacing.then ->
-          assert router.isLocked() is false
-          popping = router.popContext()
-          assert router.isLocked() is true
-          popping.then ->
-            assert router.isLocked() is false
-            done()
-
+        assert $$(router.innerHTML)('.name').text() is 'my name is john foo bar'
 
   describe '#popContext', ->
     it "throws at blank", (done) ->
@@ -173,3 +140,47 @@ describe "src/router", ->
             assert spy.calledWith('disposed')
             assert spy.callCount is 1
             done()
+
+  describe '#isLocked', ->
+    it "return true if on pushContext or popContext", (done) ->
+      class TestContext extends Ow.Context
+        expandTemplate: (props, state) -> new Promise (_done) ->
+          setTimeout ->
+            _done {}
+          , 16
+
+        dispose: -> new Promise (_done) =>
+          super
+          setTimeout ->
+            _done {}
+          , 16
+
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {className: 'name'}
+
+      router = new Ow.Router Ow.DefaultLayout, null
+      pushing = router.pushContext(TestContext, {})
+      assert router.isLocked() is true
+      pushing.then ->
+        assert router.isLocked() is false
+        replacing = router.replaceContext(TestContext, {})
+        assert router.isLocked() is true
+        replacing.then ->
+          assert router.isLocked() is false
+          popping = router.popContext()
+          assert router.isLocked() is true
+          popping.then ->
+            assert router.isLocked() is false
+            done()
+
+  context 'with DOM', ->
+    it 'replace internal on second', (done) ->
+      class Context1 extends Ow.Context
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {className: 'content'}, @props.name
+      router = new Ow.Router Ow.DefaultLayout, document.body
+      router.pushContext(Context1, {name: 1}).then ->
+        assert $$(document.body.innerHTML)('.content').text() is '1'
+        router.pushContext(Context1, {name: 2}).then ->
+          assert $$(document.body.innerHTML)('.content').text() is '2'
+          done()

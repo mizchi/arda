@@ -1,11 +1,12 @@
 module.exports =
 class Router
-  constructor: (@layoutComponent, @el)->
-    @_layout = React.createFactory(@layoutComponent)
-    @history = []
-    @_mounted = null
+  # React.Class * ?HTMLElement => Router
+  constructor: (layoutComponent, @el)->
+    @_layout = React.createFactory(layoutComponent)()
     @_locked = false
+    @history = []
 
+  # () => boolean
   isLocked: -> @_locked
 
   # typeof Context => Thenable<Boolean>
@@ -16,15 +17,14 @@ class Router
       lastContext.emit 'paused'
 
     @activeContext = context = @_createContext contextClass
-    @activeContext.emit 'created'
-    @activeContext.emit 'started'
-
     @_mount(context, initialProps).then =>
       @history.push
         name: contextClass.name
         props: initialProps
         context: context
       @_unlock()
+      @activeContext.emit 'created'
+      @activeContext.emit 'started'
       done()
 
   # () => Thenable<void>
@@ -50,6 +50,7 @@ class Router
           @_unlock()
           done()
 
+  # () => Thenable<void>
   replaceContext: (contextClass, initialProps = {}) -> new Promise (done) =>
     if @history.length <= 0
       throw 'history stack is null'
@@ -76,28 +77,30 @@ class Router
         React.withContext {shared: context}, ->
           React.createFactory(context.constructor.component)(templateProps)
 
-      rendered = @_layout {activeComponent}
-      @_renderOrUpdate(rendered).then => done()
+      @_renderOrUpdate(activeComponent).then => done()
 
   #  () => Thenable<void>
   _unmountAll: ->
-    rendered = @_layout {activeComponent: null}
-    @_renderOrUpdate(rendered)
+    @_renderOrUpdate(null)
 
   #  React.Element => Thenable<void>
-  _renderOrUpdate: (rendered) -> new Promise (done) =>
-    if @_mounted?
-      @_mounted.setProps {activeComponent}
-      done()
-    else
-      # initialize
-      if @el
-        @_mounted = React.render rendered, @el
-      else
-        # for test
-        @renderedHtml = React.renderToString rendered
-      done()
+  _renderOrUpdate: (activeComponent) -> new Promise (done) =>
+    # render
+    if !@_component? and @el?
+      @_component = React.render @_layout, @el
 
+    # setState
+    if @_component?
+      @_component.setState {activeComponent}
+    else
+      # for test
+      if activeComponent?
+        @innerHTML = React.renderToString activeComponent
+      else
+        @innerHTML = ''
+    done()
+
+  #  React.Element => Thenable<void>
   _createContext: (contextClass) ->
     context = new contextClass
     context.subscribe (eventName, fn) =>

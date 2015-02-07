@@ -12,6 +12,11 @@ class Context extends EventEmitter
       .then (templateProps) =>
         done(templateProps)
 
+  # Props -> Promise<State>
+  updateState: (state) ->
+    @state = state
+    @emit 'state-updated', @state
+
   # Override
   # Props -> Promise<State>
   initState: (props) -> props
