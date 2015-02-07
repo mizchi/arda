@@ -145,15 +145,11 @@ describe "src/router", ->
     it "return true if on pushContext or popContext", (done) ->
       class TestContext extends Ow.Context
         expandTemplate: (props, state) -> new Promise (_done) ->
-          setTimeout ->
-            _done {}
-          , 16
+          setTimeout -> _done {}
 
         dispose: -> new Promise (_done) =>
           super
-          setTimeout ->
-            _done {}
-          , 16
+          setTimeout -> _done {}
 
         @component: class Test extends Ow.Component
           render: -> React.createElement 'div', {className: 'name'}

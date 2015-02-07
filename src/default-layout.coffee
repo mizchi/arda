@@ -8,11 +8,9 @@ class DefaultLayout extends Component
       activeProps: {}
 
   render: ->
-    console.log 'emit render in layout', @state.activeProps, @state.activeContext?.constructor.name
     React.createElement 'div', {className: 'ow-container'}, [
-      if context = @state.activeContext
-        React.withContext {shared: context}, =>
-          React.createFactory(context.constructor.component)(@state.activeProps)
+      if @state.activeContext
+        @createRootElementByContext(@state.activeContext, @state.activeProps)
       else
         null
     ]

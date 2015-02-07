@@ -4,23 +4,41 @@ global.document  = jsdom('<html><body></body></html>')
 global.window    = document.parentWindow
 global.navigator = window.navigator
 
+# Libraries
 global.React = require 'react'
 global.Promise = require 'bluebird'
-
 Ow = require './src'
 
-module.exports = class Context1 extends Ow.Context
-  initState: (props) -> props
-  expandTemplate: (props, state) -> state
-  @component:
-    class Test extends Ow.Component
-      render: -> React.createElement 'div', {}, @props.name
+class Main extends Ow.Component
+  constructor: ->
+    super
+    @state = edit: @createChildContext('edit', EditContext)
+
+  render: ->
+    React.createElement 'div', {}, [
+      React.createElement 'h1', {}, 'Main'
+      @createElementByContextKey('edit', {})
+    ]
+
+class Edit extends Ow.Component
+  render: ->
+    React.createElement 'div', {}, [
+      React.createElement 'h1', {}, 'Edit'
+    ]
+
+class MainContext extends Ow.Context
+  @component: Main
+
+class EditContext extends Ow.Context
+  @component: Edit
 
 # # Application
 router = new Ow.Router Ow.DefaultLayout, document.body
-router.pushContext(Context1, {name: 1}).then ->
-  router.activeContext.updateState({name: 2}).then ->
-    console.log router.activeContext.state
+router.pushContext(EditContext, {}).then ->
+  console.log '------'
+  console.log document.body.innerHTML
+  console.log '------'
+  router.pushContext(MainContext, {}).then ->
+    console.log '------'
     console.log document.body.innerHTML
-    router.popContext().then ->
-      console.log document.body.innerHTML
+    console.log '------'

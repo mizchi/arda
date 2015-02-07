@@ -84,7 +84,6 @@ class Router
     # render
     if !@_component? and @el?
       @_component = React.render @_layout, @el
-      activeContext._owner = @_component
 
     # setState
     if @el?
@@ -103,11 +102,18 @@ class Router
     context = new contextClass
     context.subscribe (eventName, fn) =>
       context.on eventName, fn
+      
+    context.on 'internal:state-updated', (context, props) =>
+      if @activeContext isnt context
+        console.info context.constructor.name + ' is not active'
+        return
 
-    # context.on 'internal:state-updated', (state) =>
-    #   @_lock()
-    #   @_component.setState state
-    #   console.log 'state-updated!'
+      @_lock()
+      @_component?.setState
+        activeContext: context
+        activeProps: props
+      @_unlock()
+      context.emit 'internal:rendered'
 
     context
 
