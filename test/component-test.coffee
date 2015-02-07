@@ -4,10 +4,18 @@ Ow = require '../src'
 describe "src/component", ->
   describe '#createChildContext', ->
   it "should be written", (done) ->
+    class Edit extends Ow.Component
+      render: ->
+        React.createElement 'div', {}, [
+          React.createElement 'h1', {}, 'Edit'
+        ]
+
+    class EditContext extends Ow.Context
+      @component: Edit
+
     class Main extends Ow.Component
-      constructor: ->
-        super
-        @state = edit: @createChildContext('edit', EditContext)
+      childContexts:
+        edit: EditContext
 
       render: ->
         React.createElement 'div', {}, [
@@ -15,17 +23,9 @@ describe "src/component", ->
           @createElementByContextKey('edit', {})
         ]
 
-    class Edit extends Ow.Component
-      render: ->
-        React.createElement 'div', {}, [
-          React.createElement 'h1', {}, 'Edit'
-        ]
 
     class MainContext extends Ow.Context
       @component: Main
-
-    class EditContext extends Ow.Context
-      @component: Edit
 
     # # Application
     router = new Ow.Router Ow.DefaultLayout, document.body

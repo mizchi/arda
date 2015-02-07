@@ -4,6 +4,12 @@ class Component extends React.Component
     shared: React.PropTypes.object
   dispatch: -> @context.shared.emit arguments...
 
+  constructor: ->
+    if @childContexts
+      @_childContexts = {}
+      for k, v of @childContexts
+        @_childContexts[k] = @createChildContext(k, v)
+
   createChildContext: (key, contextClass) ->
     context = new contextClass
     context.subscribe (eventName, fn) =>
@@ -16,7 +22,7 @@ class Component extends React.Component
     context
 
   createElementByContextKey: (key, props) ->
-    context = @state[key]
+    context = @_childContexts[key]
     React.withContext {shared: context}, =>
       React.createFactory(context.constructor.component)(props)
 
