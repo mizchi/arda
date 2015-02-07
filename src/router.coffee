@@ -7,11 +7,17 @@ class Router
 
   # typeof Context => Thenable<Boolean>
   pushContext: (contextClass, initialProps = {}) ->
+    @history.push {
+      name: contextClass.name
+      props: initialProps
+    }
+
     context = new contextClass
+    templateProps = context._initTemplatePropsByController(initialProps)
+
     activeComponent =
       React.withContext {shared: context}, ->
-        React.createFactory(contextClass.component)(initialProps)
-
+        React.createFactory(contextClass.component)(templateProps)
     rendered = @_layout {activeComponent}
     # initialize
     if @mounted?
@@ -20,7 +26,8 @@ class Router
       if @el
         @mounted = React.render rendered, @el
       else
-        console.log 'rendered', React.renderToString rendered
+        # for test
+        @renderedHtml = React.renderToString rendered
 
   popContext: ->
   replaceContext: ->

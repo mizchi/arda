@@ -4,18 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --require espower-coffee/guess test/*.coffee"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "bluebird": "^2.9.6",
-    "react": "0.13.0-beta.1",
+    "cheerio": "^0.18.0",
     "coffee-script": "^1.9.0",
     "espower-coffee": "^0.10.0",
     "mocha": "^2.1.0",
-    "power-assert": "^0.10.1"
+    "power-assert": "^0.10.1",
+    "react": "0.13.0-beta.1",
+    "source-map-support": "^0.2.9"
   }
 }
