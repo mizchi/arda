@@ -6,17 +6,13 @@ class Context extends EventEmitter
     Promise.resolve(@initState(@props))
     .then (@state) =>
       Promise.resolve(@expandTemplate(@props, @state))
-      .then (templateProps) => done(templateProps)
+      .then (templateProps) =>
+        done(templateProps)
 
+  # Props -> Promise<State>
   initState: (props) -> props
 
+  # Props, State -> Promise<TemplateProps>
   expandTemplate: (props, state) -> props
-
-  root: (component, state, el = null) ->
-    rendered =
-      React.withContext {shared: @}, ->
-        React.createFactory(Component)(state)
-    if el?
-      React.render rendered, el
-    else
-      React.renderToString rendered
+  
+  subscribe: (subscribe) ->

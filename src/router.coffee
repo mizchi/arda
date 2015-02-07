@@ -7,12 +7,21 @@ class Router
 
   # typeof Context => Thenable<Boolean>
   pushContext: (contextClass, initialProps = {}) -> new Promise (done) =>
-    @history.push {
+    lastContext = @activeContext
+    if lastContext
+      lastContext.emit 'paused'
+
+    @history.push
       name: contextClass.name
       props: initialProps
-    }
 
-    context = new contextClass
+    @activeContext = context = new contextClass
+
+    @activeContext.subscribe (eventName, fn) =>
+      @activeContext.on eventName, fn
+
+    @activeContext.emit 'created'
+    @activeContext.emit 'started'
 
     context._initTemplatePropsByController(initialProps).then (templateProps) =>
       activeComponent =
