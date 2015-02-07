@@ -43,6 +43,39 @@ describe "src/router", ->
       router.pushContext(TestContext, {name: 'john'}).then ->
         assert $$(router.renderedHtml)('.name').text() is 'my name is john foo bar'
 
+  describe '#isLocked', ->
+    it "return true if on pushContext or popContext", (done) ->
+      class TestContext extends Ow.Context
+        expandTemplate: (props, state) -> new Promise (_done) ->
+          setTimeout ->
+            _done {}
+          , 16
+
+        dispose: -> new Promise (_done) =>
+          super
+          setTimeout ->
+            _done {}
+          , 16
+
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {className: 'name'}
+
+      router = new Ow.Router Ow.DefaultLayout, null
+      pushing = router.pushContext(TestContext, {})
+      assert router.isLocked() is true
+      pushing.then ->
+        assert router.isLocked() is false
+        replacing = router.replaceContext(TestContext, {})
+        assert router.isLocked() is true
+        replacing.then ->
+          assert router.isLocked() is false
+          popping = router.popContext()
+          assert router.isLocked() is true
+          popping.then ->
+            assert router.isLocked() is false
+            done()
+
+
   describe '#popContext', ->
     it "throws at blank", (done) ->
       router = new Ow.Router Ow.DefaultLayout, null
@@ -63,6 +96,30 @@ describe "src/router", ->
           done()
 
   describe '#replaceContext', ->
+    it "throws at blank", (done) ->
+      class Context1 extends Ow.Context
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {}, 'context1'
+      router = new Ow.Router Ow.DefaultLayout, null
+      router.replaceContext(Context1, {})
+      .then -> done 1
+      .catch -> done()
+
+    it "replace active context", (done) ->
+      class Context1 extends Ow.Context
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {}, 'context1'
+
+      class Context2 extends Ow.Context
+        @component: class Test extends Ow.Component
+          render: -> React.createElement 'div', {}, 'context2'
+
+      router = new Ow.Router Ow.DefaultLayout, null
+      router.pushContext(Context1, {}).then ->
+        assert router.history.length is 1
+        router.replaceContext(Context2, {}).then ->
+          assert router.history.length is 1
+          done()
 
   describe 'Lifecycle', ->
     it "fires created | started | resumed | disposed", (done) ->
