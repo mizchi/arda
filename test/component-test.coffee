@@ -46,8 +46,6 @@ describe "src/component", ->
           childContext.updateState((state) => {a: 1})
           .then =>
             assert.deepEqual childContext.state, {a: 1}
-            console.log '~~~~~~~~~', childContext
-            console.log document.body.innerHTML
             done()
 
         render: ->
@@ -59,3 +57,41 @@ describe "src/component", ->
           ]
 
       React.render React.createFactory(Parent)({}), document.body
+
+    it "can update inner child with router", (done) ->
+      class ChildContext extends Orca.Context
+        expandTemplate: (props, state) ->
+          {foo: state?.foo ? 1}
+
+        @component:
+          class Child extends Orca.Component
+            render: ->
+              React.createElement 'div', {className: 'foo'}, 'Child:'+@props.foo
+
+      class Parent extends Orca.Component
+        childContexts:
+          child: ChildContext
+
+        componentDidMount: ->
+          # TODO: Fix first render
+          assert $$(document.body.innerHTML)('.foo').text() is 'Child:undefined'
+
+          childContext  = @getChildContextByKey('child')
+          childContext.updateState((state) => {foo: 'first-render'})
+          .then =>
+            assert $$(document.body.innerHTML)('.foo').text() is 'Child:first-render'
+            childContext.updateState((state) => {foo: 'second-render'})
+            .then =>
+              assert $$(document.body.innerHTML)('.foo').text() is 'Child:second-render'
+              done()
+
+        render: ->
+          React.createElement 'div', {}, [
+            @createElementByContextKey('child', {fromParent: "aaa"})
+          ]
+
+      class ParentContext extends Orca.Context
+        @component: Parent
+
+      new Orca.Router(Orca.DefaultLayout, document.body)
+      .pushContext(ParentContext, {})

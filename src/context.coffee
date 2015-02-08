@@ -2,6 +2,10 @@
 
 module.exports =
 class Context extends EventEmitter
+  # component: Component
+  # props: Props
+  # state: State
+
   # (State => State) => Promise<void>
   updateState: (stateFn) -> new Promise (done) =>
     Promise.resolve(
@@ -14,9 +18,10 @@ class Context extends EventEmitter
       @state = stateFn(@state)
       @emit 'internal:state-updated', @state
       Promise.resolve(@expandTemplate(@props, @state))
-    .then (template) =>
-      @once 'internal:rendered', done
-      @emit 'internal:template-ready', @, template
+
+    .then (templateProps) =>
+      @once 'internal:rendered', => done()
+      @emit 'internal:template-ready', @, templateProps
 
   # Override
   # Props -> Promise<State>
@@ -35,14 +40,3 @@ class Context extends EventEmitter
   _initByProps: (@props) -> new Promise (done) =>
     Promise.resolve(@initState(@props))
     .then (@state) => done()
-
-  # string * typeof Context => Context
-  @createChildContext: (component, contextKey, contextClass) ->
-    context = new contextClass
-    context.subscribe (eventName, fn) => context.on eventName, fn
-    context.on 'internal:template-ready', (__, templateProps) =>
-      map = component.state.childContextPropsMap
-      map[contextKey] = templateProps
-      component.setState childContextPropsMap: map
-      context.emit 'internal:rendered'
-    context

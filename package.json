@@ -8,7 +8,9 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "node-uuid": "^1.4.2"
+  },
   "devDependencies": {
     "bluebird": "^2.9.6",
     "cheerio": "^0.18.0",

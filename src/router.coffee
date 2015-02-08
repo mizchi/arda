@@ -18,14 +18,17 @@ class Router
 
     @activeContext = context = @_createContext contextClass
     @_mount(context, initialProps).then =>
+      context.component = @_component
+
       @history.push
         name: contextClass.name
         props: initialProps
         context: context
       @_unlock()
+
       @activeContext.emit 'created'
       @activeContext.emit 'started'
-      Promise.resolve(context)
+      Promise.resolve(@activeContext)
 
   # () => Thenable<void>
   popContext: ->
