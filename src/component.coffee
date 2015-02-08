@@ -1,3 +1,4 @@
+Context = require './context'
 module.exports =
 class Component extends React.Component
   @contextTypes:
@@ -9,26 +10,13 @@ class Component extends React.Component
     if @childContexts
       @_childContexts = {}
       @state = childContextPropsMap: {}
-
-      for k, v of @childContexts
-        @_childContexts[k] = @createChildContext(k, v)
-        @state.childContextPropsMap[k] = {}
+      for key, contextClass of @childContexts
+        @_childContexts[key] = Context.createChildContext(@, key, contextClass)
+        @state.childContextPropsMap[key] = {}
 
   # string => Context
   getChildContextByKey: (key) ->
     @_childContexts[key]
-
-  # string * typeof Context => Context
-  createChildContext: (contextKey, contextClass) ->
-    context = new contextClass
-    context.subscribe (eventName, fn) => context.on eventName, fn
-
-    context.on 'internal:template-ready', (__, templateProps) =>
-      map = @state.childContextPropsMap
-      map[contextKey] = templateProps
-      @setState childContextPropsMap: map
-      context.emit 'internal:rendered'
-    context
 
   # string * Object => React.Element
   createElementByContextKey: (key, props) ->

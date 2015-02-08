@@ -9,7 +9,8 @@ class Context extends EventEmitter
       if !@state? and @props
         Promise.resolve(@initState(@props))
         .then (@state) => Promise.resolve()
-    ).then =>
+    )
+    .then =>
       @state = stateFn(@state)
       @emit 'internal:state-updated', @state
       Promise.resolve(@expandTemplate(@props, @state))
@@ -34,3 +35,14 @@ class Context extends EventEmitter
   _initByProps: (@props) -> new Promise (done) =>
     Promise.resolve(@initState(@props))
     .then (@state) => done()
+
+  # string * typeof Context => Context
+  @createChildContext: (component, contextKey, contextClass) ->
+    context = new contextClass
+    context.subscribe (eventName, fn) => context.on eventName, fn
+    context.on 'internal:template-ready', (__, templateProps) =>
+      map = component.state.childContextPropsMap
+      map[contextKey] = templateProps
+      component.setState childContextPropsMap: map
+      context.emit 'internal:rendered'
+    context

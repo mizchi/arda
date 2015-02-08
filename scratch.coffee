@@ -55,7 +55,6 @@ class Parent extends Orca.Component
 
   componentDidMount: ->
     childContext = @getChildContextByKey('child')
-    # console.log 'before update',
     console.log 'before update', childContext.state
 
     childContext.updateState((state) => {a: 1}).then =>
@@ -68,4 +67,14 @@ class Parent extends Orca.Component
       @createElementByContextKey('child', {})
     ]
 
-React.render React.createFactory(Parent)({}), document.body
+class ParentContext extends Orca.Context
+  # expandTemplate: (__, state) -> state
+  @component: Parent
+    class Child extends Orca.Component
+      render: ->
+        React.createElement 'div', {}, @props?.a ? 'nothing'
+
+# React.render React.createFactory(Parent)({}), document.body
+
+Orca.pushContext ParentContext, {}
+# React.render React.createFactory(Parent)({}), document.body
