@@ -2,7 +2,7 @@ require './spec_helper'
 Context = require '../src/context'
 
 describe "src/context", ->
-  it "call initState if props is null", (done) ->
+  it "call initState if props is null", ->
     initStateSpy = sinon.spy()
     updateSpy = sinon.spy()
     context = new class extends Context
@@ -21,11 +21,9 @@ describe "src/context", ->
     context.updateState((state) => {a: state.a+1})
     .then =>
       assert initStateSpy.calledOnce
-      # done()
       assert updateSpy.calledWith(2)
       context.updateState((state) => {a: state.a+1})
-      .then =>
-        assert initStateSpy.calledOnce
-        assert updateSpy.calledWith(3)
-        assert updateSpy.calledTwice
-        done()
+    .then =>
+      assert initStateSpy.calledOnce
+      assert updateSpy.calledWith(3)
+      assert updateSpy.calledTwice

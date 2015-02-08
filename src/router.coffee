@@ -25,10 +25,9 @@ class Router
       @_unlock()
       @activeContext.emit 'created'
       @activeContext.emit 'started'
-      Promise.resolve()
 
   # () => Thenable<void>
-  popContext: -> new Promise (done) =>
+  popContext: ->
     if @history.length <= 0
       throw 'history stack is null'
 
@@ -43,18 +42,17 @@ class Router
     ).then =>
       @activeContext = @history[@history.length-1]?.context
       if @activeContext
-        @_mount(@activeContext, @activeContext.props).then =>
-          @activeContext.emit 'started'
-          @activeContext.emit 'resumed'
-          @_unlock()
-          done()
+        @_mount(@activeContext, @activeContext.props)
       else
-        @_unmountAll().then =>
-          @_unlock()
-          done()
+        @_unmountAll()
+    .then =>
+      if @activeContext
+        @activeContext.emit 'started'
+        @activeContext.emit 'resumed'
+      @_unlock()
 
   # () => Thenable<void>
-  replaceContext: (contextClass, initialProps = {}) -> new Promise (done) =>
+  replaceContext: (contextClass, initialProps = {}) ->
     if @history.length <= 0
       throw 'history stack is null'
     @_lock()
@@ -75,7 +73,6 @@ class Router
         props: initialProps
         context: @activeContext
       @_unlock()
-      done()
 
   #  Context * Object  => Thenable<void>
   _mount: (context, initialProps) -> new Promise (done) =>

@@ -17,7 +17,8 @@ describe "src/router", ->
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
 
       router = new Orca.Router Orca.DefaultLayout, null
-      router.pushContext(TestContext, {name: 'john doe'}).then ->
+      router.pushContext(TestContext, {name: 'john doe'})
+      .then ->
         assert $$(router.innerHTML)('.name').text() is 'my name is john doe'
 
     it "will render template with initState and expandTemplate", ->
@@ -46,21 +47,24 @@ describe "src/router", ->
   describe '#popContext', ->
     it "throws at blank", (done) ->
       router = new Orca.Router Orca.DefaultLayout, null
-      router.popContext()
-      .then -> done 1
-      .catch -> done()
+      try
+        router.popContext()
+        done 1
+      catch
+        done()
 
-    it "dispose last context", (done) ->
+    it "dispose last context", ->
       class Context extends Orca.Context
         @component: class Test extends Orca.Component
           render: -> React.createElement 'div', {className: 'name'}
       router = new Orca.Router Orca.DefaultLayout, null
-      router.pushContext(Context, {}).then ->
+      router.pushContext(Context, {})
+      .then ->
         assert router.history.length is 1
-        router.popContext().then ->
-          assert router.history.length is 0
-          assert !router.activeContext?
-          done()
+        router.popContext()
+      .then ->
+        assert router.history.length is 0
+        assert !router.activeContext?
 
   describe '#replaceContext', ->
     it "throws at blank", (done) ->
@@ -68,11 +72,13 @@ describe "src/router", ->
         @component: class Test extends Orca.Component
           render: -> React.createElement 'div', {}, 'context1'
       router = new Orca.Router Orca.DefaultLayout, null
-      router.replaceContext(Context1, {})
-      .then -> done 1
-      .catch -> done()
+      try
+        router.replaceContext(Context1, {})
+        done 1
+      catch
+        done()
 
-    it "replace active context", (done) ->
+    it "replace active context", ->
       class Context1 extends Orca.Context
         @component: class Test extends Orca.Component
           render: -> React.createElement 'div', {}, 'context1'
@@ -82,14 +88,15 @@ describe "src/router", ->
           render: -> React.createElement 'div', {}, 'context2'
 
       router = new Orca.Router Orca.DefaultLayout, null
-      router.pushContext(Context1, {}).then ->
+      router.pushContext(Context1, {})
+      .then ->
         assert router.history.length is 1
-        router.replaceContext(Context2, {}).then ->
-          assert router.history.length is 1
-          done()
+        router.replaceContext(Context2, {})
+      .then ->
+        assert router.history.length is 1
 
   describe 'Lifecycle', ->
-    it "fires created | started | resumed | disposed", (done) ->
+    it "fires created | started | resumed | disposed", ->
       spy = sinon.spy()
       class Context1 extends Orca.Context
         @component: class Test extends Orca.Component
@@ -111,14 +118,15 @@ describe "src/router", ->
         assert spy.calledWith('started')
         assert spy.callCount is 2
 
-        router.pushContext(Context2, {}).then ->
-          assert spy.calledWith('paused')
-          assert spy.callCount is 3
-          router.popContext().then ->
-            assert spy.calledWith('resumed')
-            assert spy.calledWith('started')
-            assert spy.callCount is 5
-            done()
+        router.pushContext(Context2, {})
+      .then ->
+        assert spy.calledWith('paused')
+        assert spy.callCount is 3
+        router.popContext()
+      .then ->
+        assert spy.calledWith('resumed')
+        assert spy.calledWith('started')
+        assert spy.callCount is 5
 
     it "fire disposed", (done) ->
       class Context1 extends Orca.Context
@@ -134,15 +142,16 @@ describe "src/router", ->
           subscribe 'disposed' , -> spy 'disposed'
 
       router = new Orca.Router Orca.DefaultLayout, null
-      router.pushContext(Context1, {}).then ->
-        router.pushContext(Context2, {}).then ->
-          router.popContext().then ->
-            assert spy.calledWith('disposed')
-            assert spy.callCount is 1
-            done()
+      router.pushContext(Context1, {})
+      .then -> router.pushContext(Context2, {})
+      .then -> router.popContext()
+      .then ->
+        assert spy.calledWith('disposed')
+        assert spy.callCount is 1
+        done()
 
   describe '#isLocked', ->
-    it "return true if on pushContext or popContext", (done) ->
+    it "return true if on pushContext or popContext", ->
       class TestContext extends Orca.Context
         expandTemplate: (props, state) -> new Promise (_done) ->
           setTimeout -> _done {}
@@ -161,27 +170,29 @@ describe "src/router", ->
         assert router.isLocked() is false
         replacing = router.replaceContext(TestContext, {})
         assert router.isLocked() is true
-        replacing.then ->
-          assert router.isLocked() is false
-          popping = router.popContext()
-          assert router.isLocked() is true
-          popping.then ->
-            assert router.isLocked() is false
-            done()
+        replacing
+      .then ->
+        assert router.isLocked() is false
+        popping = router.popContext()
+        assert router.isLocked() is true
+        popping
+      .then ->
+        assert router.isLocked() is false
 
   context 'with DOM', ->
-    it 'render', (done) ->
+    it 'render', ->
       class Context1 extends Orca.Context
         @component: class Test extends Orca.Component
           render: -> React.createElement 'div', {className: 'content'}, @props.name
       router = new Orca.Router Orca.DefaultLayout, document.body
-      router.pushContext(Context1, {name: 1}).then ->
+      router.pushContext(Context1, {name: 1})
+      .then ->
         assert $$(document.body.innerHTML)('.content').text() is '1'
-        router.pushContext(Context1, {name: 2}).then ->
-          assert $$(document.body.innerHTML)('.content').text() is '2'
-          done()
+        router.pushContext(Context1, {name: 2})
+      .then ->
+        assert $$(document.body.innerHTML)('.content').text() is '2'
 
-    it 'update', (done) ->
+    it 'update', ->
       class Context1 extends Orca.Context
         initState: (props) -> props
         expandTemplate: (props, state) -> state
@@ -189,7 +200,7 @@ describe "src/router", ->
           render: -> React.createElement 'div', {className: 'content'}, @props.name
 
       router = new Orca.Router Orca.DefaultLayout, document.body
-      router.pushContext(Context1, {name: 1}).then ->
-        router.activeContext.updateState((state) => {name: 2}).then =>
-          assert $$(document.body.innerHTML)('.content').text() is '2'
-          done()
+      router.pushContext(Context1, {name: 1})
+      .then -> router.activeContext.updateState((state) => {name: 2})
+      .then =>
+        assert $$(document.body.innerHTML)('.content').text() is '2'
