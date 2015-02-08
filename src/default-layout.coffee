@@ -5,12 +5,12 @@ class DefaultLayout extends Component
     super
     @state =
       activeContext: null
-      activeProps: {}
+      activeTemplateProps: {}
 
   render: ->
     React.createElement 'div', {className: 'ow-container'}, [
       if @state.activeContext
-        @createRootElementByContext(@state.activeContext, @state.activeProps)
+        @createRootElementByContext(@state.activeContext, @state.activeTemplateProps)
       else
         null
     ]

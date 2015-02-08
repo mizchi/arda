@@ -91,7 +91,7 @@ class Router
 
     # setState
     if @el?
-      @_component.setState {activeContext, activeProps: props}
+      @_component.setState {activeContext, activeTemplateProps: props}
     else
       # for test
       if activeContext
@@ -107,7 +107,7 @@ class Router
     context.subscribe (eventName, fn) =>
       context.on eventName, fn
 
-    context.on 'internal:template-ready', (context, props) =>
+    context.on 'internal:template-ready', (context, templateProps) =>
       if @activeContext isnt context
         console.info context.constructor.name + ' is not active'
         return
@@ -115,7 +115,7 @@ class Router
       @_lock()
       @_component?.setState
         activeContext: context
-        activeProps: props
+        activeTemplateProps: templateProps
       @_unlock()
       context.emit 'internal:rendered'
 

@@ -41,13 +41,14 @@ class Component extends React.Component
   createRootElementByContext: (context, props) ->
     context.subscribe (eventName, fn) =>
       context.on eventName, fn
-    context.on 'internal:template-ready', (context, props) =>
+
+    context.on 'internal:template-ready', (__, templateProps) =>
       if @activeContext isnt context
         console.info context.constructor.name + ' is not active'
         return
       @_component?.setState
         activeContext: context
-        activeProps: props
+        activeTemplateProps: templateProps
       context.emit 'internal:rendered'
 
     React.withContext {shared: context}, =>
