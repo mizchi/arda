@@ -2,37 +2,59 @@ require './spec_helper'
 require '../src/component'
 Ow = require '../src'
 describe "src/component", ->
-  describe '#createChildContext', ->
-  it "should be written", (done) ->
-    class Edit extends Ow.Component
-      render: ->
-        React.createElement 'div', {}, [
-          React.createElement 'h1', {}, 'Edit'
-        ]
+  describe '#createElementByContextKey', ->
+    it "should render child context", ->
+      class ChildContext extends Ow.Context
+        @component:
+          class Child extends Ow.Component
+            render: ->
+              React.createElement 'div', {}, [
+                React.createElement 'h1', {}, 'Child'
+              ]
 
-    class EditContext extends Ow.Context
-      @component: Edit
+      class Parent extends Ow.Component
+        childContexts:
+          child: ChildContext
 
-    class Main extends Ow.Component
-      childContexts:
-        edit: EditContext
+        render: ->
+          assert @getChildContextByKey('child')
 
-      render: ->
-        React.createElement 'div', {}, [
-          React.createElement 'h1', {}, 'Main'
-          @createElementByContextKey('edit', {})
-        ]
+          React.createElement 'div', {}, [
+            React.createElement 'h1', {}, 'Parent'
+            @createElementByContextKey('child', {})
+          ]
 
+      React.render React.createFactory(Parent)({}), document.body
+      assert document.body.innerHTML.indexOf 'Parent' > -1
+      assert document.body.innerHTML.indexOf 'Child' > -1
 
-    class MainContext extends Ow.Context
-      @component: Main
+    it "can update inner child", (done) ->
+      class ChildContext extends Ow.Context
+        expandTemplate: (__, state) -> state
+        @component:
+          class Child extends Ow.Component
+            render: ->
+              console.log 'child renderer', @props, @state
+              React.createElement 'div', {}, @props?.a ? 'nothing'
 
-    # # Application
-    router = new Ow.Router Ow.DefaultLayout, document.body
-    router.pushContext(EditContext, {}).then ->
-      assert document.body.innerHTML.indexOf 'Edit' > -1
-      assert document.body.innerHTML.indexOf 'Main' is -1
-      router.pushContext(MainContext, {}).then ->
-        assert document.body.innerHTML.indexOf 'Edit' > -1
-        assert document.body.innerHTML.indexOf 'Main' > -1
-        done()
+      class Parent extends Ow.Component
+        childContexts:
+          child: ChildContext
+
+        componentDidMount: ->
+          childContext = @getChildContextByKey('child')
+          childContext.updateState({a: 1}).then =>
+            assert.deepEqual childContext.state, {a: 1}
+            console.log '~~~~~~~~~', childContext
+            console.log document.body.innerHTML
+            done()
+
+        render: ->
+          assert @getChildContextByKey('child')
+
+          React.createElement 'div', {}, [
+            React.createElement 'h1', {}, 'Parent'
+            @createElementByContextKey('child', {})
+          ]
+
+      React.render React.createFactory(Parent)({}), document.body
