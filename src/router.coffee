@@ -27,6 +27,14 @@ class Router
       @activeContext.emit 'started'
       done()
 
+  _disposeContext: (context) ->
+    delete context.props
+    delete context.state
+    context.emit 'disposed'
+    context.removeAllListeners?()
+    context.disposed = true
+    Object.freeze(context)
+
   # () => Thenable<void>
   popContext: -> new Promise (done) =>
     if @history.length <= 0
@@ -37,7 +45,10 @@ class Router
     @history.pop()
 
     # emit disposed in context.dispose
-    Promise.resolve(lastContext?.dispose()).then =>
+    Promise.resolve(
+      if lastContext
+        @_disposeContext(lastContext)
+    ).then =>
       @activeContext = @history[@history.length-1]?.context
       if @activeContext
         @_mount(@activeContext, @activeContext.props).then =>
@@ -55,9 +66,12 @@ class Router
     if @history.length <= 0
       throw 'history stack is null'
     @_lock()
-    # emit disposed in context.dispose
+
     lastContext = @activeContext
-    Promise.resolve(lastContext?.dispose()).then =>
+    Promise.resolve(
+      if lastContext
+        @_disposeContext(lastContext)
+    ).then =>
       @activeContext = @_createContext(contextClass)
       @activeContext.emit 'created'
       @activeContext.emit 'started'
@@ -102,7 +116,7 @@ class Router
     context = new contextClass
     context.subscribe (eventName, fn) =>
       context.on eventName, fn
-      
+
     context.on 'internal:state-updated', (context, props) =>
       if @activeContext isnt context
         console.info context.constructor.name + ' is not active'

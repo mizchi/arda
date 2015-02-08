@@ -27,10 +27,3 @@ class Context extends EventEmitter
 
   # Override
   subscribe: (subscribe) ->
-
-  dispose: ->
-    delete @props
-    delete @state
-    @emit 'disposed'
-    @removeAllListeners?()
-    Object.freeze(@)
