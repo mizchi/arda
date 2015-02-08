@@ -111,7 +111,6 @@ class Router
     context = new contextClass
     context.subscribe (eventName, fn) =>
       context.on eventName, fn
-
     context.on 'internal:template-ready', (context, templateProps) =>
       if @activeContext isnt context
         console.info context.constructor.name + ' is not active'

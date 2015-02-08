@@ -16,10 +16,14 @@ class ChildContext extends Arda.Context
   expandTemplate: (props, state) ->
     {foo: state.foo}
 
+  constructor: ->
+    super
+    @on 'disposed', ->
+      console.log '+++++++++ child disposed ++++++++++'
+
   @component:
     class Child extends Arda.Component
       render: ->
-        console.log @props
         React.createElement 'div', {}, 'Child:'+@props.foo
 
 class Parent extends Arda.Component
@@ -28,18 +32,19 @@ class Parent extends Arda.Component
 
   componentDidMount: ->
     childContext  = @getChildContextByKey('child')
-    childContext.updateState((state) => {foo: 2})
-    .then =>
-      childContext.updateState((state) => {foo: 4})
-    .then =>
-      @context.shared.updateState((s) => {name: 'changed'})
-    .then (s) =>
-      console.log 'updated', document.body.innerHTML
+
+    # childContext.updateState((state) => {foo: 2})
+    # .then =>
+    #   childContext.updateState((state) => {foo: 4})
+    # .then =>
+    #   @context.shared.updateState((s) => {name: 'changed'})
+    # .then (s) =>
+    #   console.log 'updated', document.body.innerHTML
 
   render: ->
     React.createElement 'div', {}, [
       React.createElement 'h1', {}, name: @props.name
-      @createChildElement('child')
+      @createChildElement('child', {})
     ]
 
 class ParentContext extends Arda.Context
@@ -49,3 +54,11 @@ class ParentContext extends Arda.Context
 
 global.router = new Arda.Router(Arda.DefaultLayout, document.body)
 router.pushContext(ParentContext, {name: 'initial'})
+.then =>
+  router.pushContext(ParentContext, {name: 'initial'})
+.then (willDisposeContext) =>
+  willDisposeContext.on 'disposed', ->
+    console.log 'parent disposed!'
+
+  router.popContext()
+# .then =>

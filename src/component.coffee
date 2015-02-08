@@ -6,7 +6,8 @@ class Component extends React.Component
 
   dispatch: -> @context.shared.emit arguments...
 
-  constructor: ->
+  # parentContext : Context
+  constructor: () ->
     super
     if @childContexts
       @_childContexts = {}
@@ -22,29 +23,19 @@ class Component extends React.Component
     @_childContexts[key]
 
   # string * Object => React.Element
-  createChildElement: (key) ->
+  createChildElement: (key, props) ->
     lastElement = @_childContextElementCaches[key]
     return lastElement if lastElement
 
     @_childContextCache ?= {}
-
     context = @getChildContextByKey(key)
-    props = context.props ? {}
 
+    # It will launch initState on first touch
+    context.props = props
     component = React.createFactory(context.constructor.component)
 
     # return with cache
     @_childContextElementCaches[key] = React.withContext {shared: context}, => component(ref: key)
-
-  # string * typeof Context => Context
-  _createChildContext: (contextKey, context) ->
-    parentComponent = @
-    context.on 'internal:template-ready', (__, templateProps) =>
-      component = @refs[contextKey]
-      component.props = templateProps
-      component.forceUpdate()
-      context.emit 'internal:rendered'
-    context
 
   # string * Object => React.Element
   createRootElementByContext: (context, props) ->
@@ -60,5 +51,15 @@ class Component extends React.Component
       @_component?.setState
         activeContext: context
         activeTemplateProps: templateProps
+      context.emit 'internal:rendered'
+    context
+
+  # string * typeof Context => Context
+  _createChildContext: (contextKey, context, parent) ->
+    parentComponent = @
+    context.on 'internal:template-ready', (__, templateProps) =>
+      component = @refs[contextKey]
+      component.props = templateProps
+      component.forceUpdate()
       context.emit 'internal:rendered'
     context
