@@ -2,13 +2,6 @@
 
 module.exports =
 class Context extends EventEmitter
-  _initTemplatePropsByController: (@props) -> new Promise (done) =>
-    Promise.resolve(@initState(@props))
-    .then (@state) =>
-      Promise.resolve(@expandTemplate(@props, @state))
-      .then (templateProps) =>
-        done(templateProps)
-
   # State -> Promise<void>
   updateState: (state) -> new Promise (done) =>
     @state = state
@@ -27,3 +20,7 @@ class Context extends EventEmitter
 
   # Override
   subscribe: (subscribe) ->
+
+  _initByProps: (@props) -> new Promise (done) =>
+    Promise.resolve(@initState(@props))
+    .then (@state) => done()

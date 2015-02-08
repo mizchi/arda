@@ -27,14 +27,6 @@ class Router
       @activeContext.emit 'started'
       done()
 
-  _disposeContext: (context) ->
-    delete context.props
-    delete context.state
-    context.emit 'disposed'
-    context.removeAllListeners?()
-    context.disposed = true
-    Object.freeze(context)
-
   # () => Thenable<void>
   popContext: -> new Promise (done) =>
     if @history.length <= 0
@@ -86,7 +78,7 @@ class Router
 
   #  Context * Object  => Thenable<void>
   _mount: (context, initialProps) -> new Promise (done) =>
-    context._initTemplatePropsByController(initialProps).then (templateProps) =>
+    @_initContextWithExpanding(context, initialProps).then (templateProps) =>
       @_renderOrUpdate(context, templateProps).then => done()
 
   #  () => Thenable<void>
@@ -133,3 +125,17 @@ class Router
 
   _unlock: -> @_locked = false
   _lock: -> @_locked = true
+
+  _disposeContext: (context) ->
+    delete context.props
+    delete context.state
+    context.emit 'disposed'
+    context.removeAllListeners?()
+    context.disposed = true
+    Object.freeze(context)
+
+  _initContextWithExpanding: (context, props) -> new Promise (done) =>
+    context._initByProps(props).then =>
+      Promise.resolve(context.expandTemplate(context.props, context.state))
+      .then (templateProps) =>
+        done(templateProps)
