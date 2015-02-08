@@ -1,18 +1,18 @@
 require './spec_helper'
 require '../src/component'
-Ow = require '../src'
+Orca = require '../src'
 describe "src/component", ->
   describe '#createElementByContextKey', ->
     it "should render child context", ->
-      class ChildContext extends Ow.Context
+      class ChildContext extends Orca.Context
         @component:
-          class Child extends Ow.Component
+          class Child extends Orca.Component
             render: ->
               React.createElement 'div', {}, [
                 React.createElement 'h1', {}, 'Child'
               ]
 
-      class Parent extends Ow.Component
+      class Parent extends Orca.Component
         childContexts:
           child: ChildContext
 
@@ -29,15 +29,15 @@ describe "src/component", ->
       assert document.body.innerHTML.indexOf 'Child' > -1
 
     it "can update inner child", (done) ->
-      class ChildContext extends Ow.Context
+      class ChildContext extends Orca.Context
         expandTemplate: (__, state) -> state
         @component:
-          class Child extends Ow.Component
+          class Child extends Orca.Component
             render: ->
               console.log 'child renderer', @props, @state
               React.createElement 'div', {}, @props?.a ? 'nothing'
 
-      class Parent extends Ow.Component
+      class Parent extends Orca.Component
         childContexts:
           child: ChildContext
 

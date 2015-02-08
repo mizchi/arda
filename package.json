@@ -1,6 +1,6 @@
 {
-  "name": "newframework",
-  "version": "1.0.0",
+  "name": "orca",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {

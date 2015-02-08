@@ -7,9 +7,9 @@ global.navigator = window.navigator
 # Libraries
 global.React = require 'react'
 global.Promise = require 'bluebird'
-Ow = require './src'
+Orca = require './src'
 
-class Main extends Ow.Component
+class Main extends Orca.Component
   constructor: ->
     super
     @state = edit: @createChildContext('edit', EditContext)
@@ -20,20 +20,20 @@ class Main extends Ow.Component
       @createElementByContextKey('edit', {})
     ]
 
-class Edit extends Ow.Component
+class Edit extends Orca.Component
   render: ->
     React.createElement 'div', {}, [
       React.createElement 'h1', {}, 'Edit'
     ]
 
-class MainContext extends Ow.Context
+class MainContext extends Orca.Context
   @component: Main
 
-class EditContext extends Ow.Context
+class EditContext extends Orca.Context
   @component: Edit
 
 # # Application
-router = new Ow.Router Ow.DefaultLayout, document.body
+router = new Orca.Router Orca.DefaultLayout, document.body
 router.pushContext(EditContext, {}).then ->
   console.log '------'
   console.log document.body.innerHTML
