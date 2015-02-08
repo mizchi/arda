@@ -47,7 +47,6 @@ class ChildContext extends Orca.Context
   @component:
     class Child extends Orca.Component
       render: ->
-        console.log 'child renderer', @props, @state
         React.createElement 'div', {}, @props?.a ? 'nothing'
 
 class Parent extends Orca.Component
@@ -56,15 +55,14 @@ class Parent extends Orca.Component
 
   componentDidMount: ->
     childContext = @getChildContextByKey('child')
-    childContext.updateState({a: 1}).then =>
-      # assert.deepEqual childContext.state, {a: 1}
-      console.log '~~~~~~~~~', childContext
+    # console.log 'before update',
+    console.log 'before update', childContext.state
+
+    childContext.updateState((state) => {a: 1}).then =>
+      console.log 'after update', childContext.state
       console.log document.body.innerHTML
-      # done()
 
   render: ->
-    # assert @getChildContextByKey('child')
-
     React.createElement 'div', {}, [
       React.createElement 'h1', {}, 'Parent'
       @createElementByContextKey('child', {})

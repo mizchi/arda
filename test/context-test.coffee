@@ -2,7 +2,7 @@ require './spec_helper'
 Context = require '../src/context'
 
 describe "src/context", ->
-  it "should be written", (done) ->
+  it "call initState if props is null", (done) ->
     initStateSpy = sinon.spy()
     updateSpy = sinon.spy()
     context = new class extends Context
@@ -12,8 +12,8 @@ describe "src/context", ->
       expandTemplate: (props, state) -> state
     context.props = {}
 
-    # router updating role
-    context.on 'internal:state-updated', (context, templateProps) =>
+    # Instead of updater
+    context.on 'internal:template-ready', (context, templateProps) =>
       updateSpy(templateProps.a)
       context.emit 'internal:rendered'
 

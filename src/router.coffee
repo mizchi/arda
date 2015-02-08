@@ -109,7 +109,7 @@ class Router
     context.subscribe (eventName, fn) =>
       context.on eventName, fn
 
-    context.on 'internal:state-updated', (context, props) =>
+    context.on 'internal:template-ready', (context, props) =>
       if @activeContext isnt context
         console.info context.constructor.name + ' is not active'
         return
