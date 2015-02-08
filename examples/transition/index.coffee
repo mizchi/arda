@@ -1,43 +1,6 @@
-# Arda
-
-[![Build Status](https://drone.io/github.com/mizchi/arda/status.png)](https://drone.io/github.com/mizchi/arda/latest)
-
-WIP
-
-## TODO for Release(1.0.0)
-
-- [ ] Event Discrypter & Subscriber
-- [ ] Check disposer with child context
-- [ ] TypeScript definition file
-- [ ] Dogfooding by author's job
-
-## Minimum Case
-
-```coffee
 window.React = require 'react'
 window.Promise = require 'bluebird'
-Arda = require 'arda'
-
-class HelloComponent extends Arda.Component
-  render: ->
-    React.createElement 'h1', {}, name: 'Hello Arda'
-
-class HelloContext extends Arda.Context
-  @component: HelloComponent
-
-window.addEventListener 'DOMContentLoaded', ->
-  router = new Arda.Router(Arda.DefaultLayout, document.body)
-  router.pushContext(HelloContext, {})
-```
-
-## Transition
-
-Router has `pushContext`, `popContext` and `replaceContext`.
-
-```coffee
-window.React = require 'react'
-window.Promise = require 'bluebird'
-Arda = require 'arda'
+Arda = require '../../src/'
 
 class MainContext extends Arda.Context
   @component:
@@ -60,8 +23,3 @@ window.addEventListener 'DOMContentLoaded', ->
   .then => router.replaceContext(MainContext, {}) # Main, Main
   .then => router.replaceContext(SubContext, {})  # Main, Sub
   .then => console.log router.history
-```
-
-## LICENSE
-
-MIT

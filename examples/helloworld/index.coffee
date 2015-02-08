@@ -1,5 +1,5 @@
-global.React = require 'react'
-global.Promise = require 'bluebird'
+window.React = require 'react'
+window.Promise = require 'bluebird'
 Arda = require '../../src/'
 
 class HelloComponent extends Arda.Component
