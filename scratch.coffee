@@ -9,10 +9,18 @@ global.React = require 'react'
 global.Promise = require 'bluebird'
 Orca = require './src'
 
+class Edit extends Orca.Component
+  render: ->
+    React.createElement 'div', {}, [
+      React.createElement 'h1', {}, 'Edit'
+    ]
+
+class EditContext extends Orca.Context
+  @component: Edit
+
 class Main extends Orca.Component
-  constructor: ->
-    super
-    @state = edit: @createChildContext('edit', EditContext)
+  childContexts:
+    edit: EditContext
 
   render: ->
     React.createElement 'div', {}, [
@@ -20,17 +28,8 @@ class Main extends Orca.Component
       @createElementByContextKey('edit', {})
     ]
 
-class Edit extends Orca.Component
-  render: ->
-    React.createElement 'div', {}, [
-      React.createElement 'h1', {}, 'Edit'
-    ]
-
 class MainContext extends Orca.Context
   @component: Main
-
-class EditContext extends Orca.Context
-  @component: Edit
 
 # # Application
 router = new Orca.Router Orca.DefaultLayout, document.body
