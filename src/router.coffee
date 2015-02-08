@@ -10,7 +10,7 @@ class Router
   isLocked: -> @_locked
 
   # typeof Context => Thenable<Boolean>
-  pushContext: (contextClass, initialProps = {}) -> new Promise (done) =>
+  pushContext: (contextClass, initialProps = {}) ->
     @_lock()
     lastContext = @activeContext
     if lastContext
@@ -25,7 +25,7 @@ class Router
       @_unlock()
       @activeContext.emit 'created'
       @activeContext.emit 'started'
-      done()
+      Promise.resolve()
 
   # () => Thenable<void>
   popContext: -> new Promise (done) =>
@@ -61,20 +61,21 @@ class Router
 
     lastContext = @activeContext
     Promise.resolve(
-      if lastContext
-        @_disposeContext(lastContext)
-    ).then =>
+      if lastContext then @_disposeContext(lastContext) else null
+    )
+    .then =>
       @activeContext = @_createContext(contextClass)
       @activeContext.emit 'created'
       @activeContext.emit 'started'
-      @_mount(@activeContext, initialProps).then =>
-        @history.pop()
-        @history.push
-          name: contextClass.name
-          props: initialProps
-          context: @activeContext
-        @_unlock()
-        done()
+      @_mount(@activeContext, initialProps)
+    .then =>
+      @history.pop()
+      @history.push
+        name: contextClass.name
+        props: initialProps
+        context: @activeContext
+      @_unlock()
+      done()
 
   #  Context * Object  => Thenable<void>
   _mount: (context, initialProps) -> new Promise (done) =>
@@ -134,8 +135,6 @@ class Router
     context.disposed = true
     Object.freeze(context)
 
-  _initContextWithExpanding: (context, props) -> new Promise (done) =>
-    context._initByProps(props).then =>
-      Promise.resolve(context.expandTemplate(context.props, context.state))
-      .then (templateProps) =>
-        done(templateProps)
+  _initContextWithExpanding: (context, props) ->
+    context._initByProps(props)
+    .then => Promise.resolve(context.expandTemplate(context.props, context.state))

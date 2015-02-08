@@ -13,9 +13,9 @@ class Context extends EventEmitter
       @state = stateFn(@state)
       @emit 'internal:state-updated', @state
       Promise.resolve(@expandTemplate(@props, @state))
-      .then (template) =>
-        @once 'internal:rendered', done
-        @emit 'internal:template-ready', @, template
+    .then (template) =>
+      @once 'internal:rendered', done
+      @emit 'internal:template-ready', @, template
 
   # Override
   # Props -> Promise<State>
