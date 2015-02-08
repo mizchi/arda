@@ -1,18 +1,18 @@
 require './spec_helper'
 require '../src/component'
-Orca = require '../src'
+Arda = require '../src'
 describe "src/component", ->
-  describe '#createElementByContextKey', ->
+  describe '#createChildElement', ->
     it "should render child context", ->
-      class ChildContext extends Orca.Context
+      class ChildContext extends Arda.Context
         @component:
-          class Child extends Orca.Component
+          class Child extends Arda.Component
             render: ->
               React.createElement 'div', {}, [
                 React.createElement 'h1', {}, 'Child'
               ]
 
-      class Parent extends Orca.Component
+      class Parent extends Arda.Component
         childContexts:
           child: ChildContext
 
@@ -21,7 +21,7 @@ describe "src/component", ->
 
           React.createElement 'div', {}, [
             React.createElement 'h1', {}, 'Parent'
-            @createElementByContextKey('child', {})
+            @createChildElement('child')
           ]
 
       React.render React.createFactory(Parent)({}), document.body
@@ -29,15 +29,15 @@ describe "src/component", ->
       assert document.body.innerHTML.indexOf 'Child' > -1
 
     it "can update inner child", (done) ->
-      class ChildContext extends Orca.Context
+      class ChildContext extends Arda.Context
         expandTemplate: (__, state) -> state
         @component:
-          class Child extends Orca.Component
+          class Child extends Arda.Component
             render: ->
               console.log 'child renderer', @props, @state
               React.createElement 'div', {}, @props?.a ? 'nothing'
 
-      class Parent extends Orca.Component
+      class Parent extends Arda.Component
         childContexts:
           child: ChildContext
 
@@ -53,22 +53,22 @@ describe "src/component", ->
 
           React.createElement 'div', {}, [
             React.createElement 'h1', {}, 'Parent'
-            @createElementByContextKey('child', {})
+            @createChildElement('child', {})
           ]
 
       React.render React.createFactory(Parent)({}), document.body
 
     it "can update inner child with router", (done) ->
-      class ChildContext extends Orca.Context
+      class ChildContext extends Arda.Context
         expandTemplate: (props, state) ->
           {foo: state?.foo ? 1}
 
         @component:
-          class Child extends Orca.Component
+          class Child extends Arda.Component
             render: ->
               React.createElement 'div', {className: 'foo'}, 'Child:'+@props.foo
 
-      class Parent extends Orca.Component
+      class Parent extends Arda.Component
         childContexts:
           child: ChildContext
 
@@ -81,17 +81,25 @@ describe "src/component", ->
           .then =>
             assert $$(document.body.innerHTML)('.foo').text() is 'Child:first-render'
             childContext.updateState((state) => {foo: 'second-render'})
-            .then =>
-              assert $$(document.body.innerHTML)('.foo').text() is 'Child:second-render'
-              done()
+          .then =>
+            assert $$(document.body.innerHTML)('.foo').text() is 'Child:second-render'
+            @context.shared.updateState(=> name: 'aaa')
+          .then =>
+            # not refresh
+            assert $$(document.body.innerHTML)('.foo').text() is 'Child:second-render'
+            assert $$(document.body.innerHTML)('.name').text() is 'aaa'
+            done()
 
         render: ->
           React.createElement 'div', {}, [
-            @createElementByContextKey('child', {fromParent: "aaa"})
+            React.createElement 'h1', {className: "name"}, name: @props.name
+            @createChildElement('child', {fromParent: "aaa"})
           ]
 
-      class ParentContext extends Orca.Context
+      class ParentContext extends Arda.Context
         @component: Parent
+        initState: (props) -> props
+        expandTemplate: (__, state) -> state
 
-      new Orca.Router(Orca.DefaultLayout, document.body)
+      new Arda.Router(Arda.DefaultLayout, document.body)
       .pushContext(ParentContext, {})

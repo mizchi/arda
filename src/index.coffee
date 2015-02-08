@@ -1,5 +1,5 @@
-module.exports = Orca = {}
-Orca.Component     = require './component'
-Orca.Context       = require './context'
-Orca.DefaultLayout = require './default-layout'
-Orca.Router        = require './router'
+module.exports = Arda = {}
+Arda.Component     = require './component'
+Arda.Context       = require './context'
+Arda.DefaultLayout = require './default-layout'
+Arda.Router        = require './router'

@@ -1,52 +1,52 @@
 require './spec_helper'
-Orca = require '../src/index'
+Arda = require '../src/index'
 
 describe "src/router", ->
   describe '#pushContext', ->
     it "will mount target by pushContext", (done) ->
-      class TestContext extends Orca.Context
-        @component: class Test extends Orca.Component
+      class TestContext extends Arda.Context
+        @component: class Test extends Arda.Component
           componentWillMount: -> done()
           render: -> React.createElement 'div', {}, 'test'
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(TestContext, {})
 
     it "will render template by default", ->
-      class TestContext extends Orca.Context
-        @component: class Test extends Orca.Component
+      class TestContext extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
 
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john doe'})
       .then ->
         assert $$(router.innerHTML)('.name').text() is 'my name is john doe'
 
     it "will render template with initState and expandTemplate", ->
-      class TestContext extends Orca.Context
+      class TestContext extends Arda.Context
         initState: (props) -> name: props.name + ' foo'
         expandTemplate: (props, state) -> name: state.name + ' bar'
-        @component: class Test extends Orca.Component
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john'}).then ->
         assert $$(router.innerHTML)('.name').text() is 'my name is john foo bar'
 
     it "will render template with initState and expandTemplate with Promise", ->
-      class TestContext extends Orca.Context
+      class TestContext extends Arda.Context
         initState: (props) -> new Promise (done) ->
           done name: props.name + ' foo'
         expandTemplate: (props, state) -> new Promise (done) ->
           done name: state.name + ' bar'
-        @component: class Test extends Orca.Component
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
 
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john'}).then ->
         assert $$(router.innerHTML)('.name').text() is 'my name is john foo bar'
 
   describe '#popContext', ->
     it "throws at blank", (done) ->
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       try
         router.popContext()
         done 1
@@ -54,10 +54,10 @@ describe "src/router", ->
         done()
 
     it "dispose last context", ->
-      class Context extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(Context, {})
       .then ->
         assert router.history.length is 1
@@ -68,10 +68,10 @@ describe "src/router", ->
 
   describe '#replaceContext', ->
     it "throws at blank", (done) ->
-      class Context1 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context1 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, 'context1'
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       try
         router.replaceContext(Context1, {})
         done 1
@@ -79,15 +79,15 @@ describe "src/router", ->
         done()
 
     it "replace active context", ->
-      class Context1 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context1 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, 'context1'
 
-      class Context2 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context2 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, 'context2'
 
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(Context1, {})
       .then ->
         assert router.history.length is 1
@@ -98,8 +98,8 @@ describe "src/router", ->
   describe 'Lifecycle', ->
     it "fires created | started | resumed | disposed", ->
       spy = sinon.spy()
-      class Context1 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context1 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
         subscribe: (subscribe) ->
           subscribe 'created', -> spy 'created'
@@ -107,11 +107,11 @@ describe "src/router", ->
           subscribe 'paused' , -> spy 'paused'
           subscribe 'resumed' , -> spy 'resumed'
 
-      class Context2 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context2 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
 
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       assert !router.activeContext
       router.pushContext(Context1, {}).then ->
         assert spy.calledWith('created')
@@ -129,19 +129,19 @@ describe "src/router", ->
         assert spy.callCount is 5
 
     it "fire disposed", (done) ->
-      class Context1 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context1 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
 
       spy = sinon.spy()
-      class Context2 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context2 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
 
         subscribe: (subscribe) ->
           subscribe 'disposed' , -> spy 'disposed'
 
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(Context1, {})
       .then -> router.pushContext(Context2, {})
       .then -> router.popContext()
@@ -152,7 +152,7 @@ describe "src/router", ->
 
   describe '#isLocked', ->
     it "return true if on pushContext or popContext", ->
-      class TestContext extends Orca.Context
+      class TestContext extends Arda.Context
         expandTemplate: (props, state) -> new Promise (_done) ->
           setTimeout -> _done {}
 
@@ -160,10 +160,10 @@ describe "src/router", ->
           super
           setTimeout -> _done {}
 
-        @component: class Test extends Orca.Component
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}
 
-      router = new Orca.Router Orca.DefaultLayout, null
+      router = new Arda.Router Arda.DefaultLayout, null
       pushing = router.pushContext(TestContext, {})
       assert router.isLocked() is true
       pushing.then ->
@@ -181,10 +181,10 @@ describe "src/router", ->
 
   context 'with DOM', ->
     it 'render', ->
-      class Context1 extends Orca.Context
-        @component: class Test extends Orca.Component
+      class Context1 extends Arda.Context
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'content'}, @props.name
-      router = new Orca.Router Orca.DefaultLayout, document.body
+      router = new Arda.Router Arda.DefaultLayout, document.body
       router.pushContext(Context1, {name: 1})
       .then ->
         assert $$(document.body.innerHTML)('.content').text() is '1'
@@ -193,13 +193,13 @@ describe "src/router", ->
         assert $$(document.body.innerHTML)('.content').text() is '2'
 
     it 'update', ->
-      class Context1 extends Orca.Context
+      class Context1 extends Arda.Context
         initState: (props) -> props
         expandTemplate: (props, state) -> state
-        @component: class Test extends Orca.Component
+        @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'content'}, @props.name
 
-      router = new Orca.Router Orca.DefaultLayout, document.body
+      router = new Arda.Router Arda.DefaultLayout, document.body
       router.pushContext(Context1, {name: 1})
       .then -> router.activeContext.updateState((state) => {name: 2})
       .then =>

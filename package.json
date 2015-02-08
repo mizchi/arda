@@ -1,5 +1,5 @@
 {
-  "name": "orca",
+  "name": "arda",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -7,9 +7,8 @@
     "test": "./node_modules/.bin/mocha --require espower-coffee/guess test/*.coffee -t 200"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "node-uuid": "^1.4.2"
   },
   "devDependencies": {
     "bluebird": "^2.9.6",
