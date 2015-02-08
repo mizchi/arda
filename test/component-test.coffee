@@ -43,7 +43,7 @@ describe "src/component", ->
 
         componentDidMount: ->
           childContext = @getChildContextByKey('child')
-          childContext.updateState({a: 1}).then =>
+          childContext.updateState((state) => {a: 1}).then =>
             assert.deepEqual childContext.state, {a: 1}
             console.log '~~~~~~~~~', childContext
             console.log document.body.innerHTML
