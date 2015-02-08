@@ -5,15 +5,12 @@ class Context extends EventEmitter
   # (State => State) => Promise<void>
   updateState: (stateFn) -> new Promise (done) =>
     Promise.resolve(
+      # Call initState if state is null/undefined
       if !@state? and @props
-        new Promise (d) =>
-          Promise.resolve(@initState(@props))
-          .then (@state) =>
-            @state = stateFn(@state) # TODO: merge other update
-            d()
-      else
-        @state = stateFn(@state)
+        Promise.resolve(@initState(@props))
+        .then (@state) => Promise.resolve()
     ).then =>
+      @state = stateFn(@state)
       @emit 'internal:state-updated', @state
       Promise.resolve(@expandTemplate(@props, @state))
       .then (template) =>
