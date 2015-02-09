@@ -15,9 +15,12 @@ class Context extends EventEmitter
   constructor: (@_component, @props) ->
     super
     subscribers = @constructor.subscribers ? []
+    @delegateSubscriber (eventName, callback) => @on eventName, callback
+
+  delegateSubscriber: (subscribe) ->
+    subscribers = @constructor.subscribers ? []
     subscribers.forEach (subscriber) =>
-      subscriber @, (eventName, callback) =>
-        @on eventName, callback
+      subscriber @, subscribe
 
   # (State => State) => Promise<void>
   updateState: (stateFn) ->
