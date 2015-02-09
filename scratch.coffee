@@ -10,8 +10,9 @@ console.warn = ->
 # Libraries
 global.React = require 'react'
 global.Promise = require 'bluebird'
-Arda = require './src'
+global.Arda = Arda = require './src'
 
+# Application
 class HelloComponent extends Arda.Component
   render: ->
     React.createElement 'h1', {}, 'Hello Arda'
@@ -19,7 +20,6 @@ class HelloComponent extends Arda.Component
 class HelloContext extends Arda.Context
   @component: HelloComponent
 
-# window.addEventListener 'DOMContentLoaded', ->
 router = new Arda.Router(Arda.DefaultLayout, document.body)
 router.pushContext(HelloContext, {})
 .then =>
