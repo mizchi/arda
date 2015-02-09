@@ -4,12 +4,13 @@ inherits = require 'inherits'
 # Context mixin React.Component
 module.exports =
 class Context extends React.Component
-  ## Properties
+  inherits @, EventEmitter
+
+  ##### Properties #####
   # props: Props
   # state: State
   # parent: Context
-
-  inherits @, EventEmitter
+  ######################
 
   render: (templateProps = {}) ->
     component = React.createFactory(@constructor.component)
@@ -22,9 +23,8 @@ class Context extends React.Component
     @props = props if props
 
   # (State => State) => Promise<void>
-  updateState: (stateFn) -> new Promise (done) =>
+  updateState: (stateFn) ->
     Promise.resolve(
-      # Call initState if state is null/undefined
       if !@state? and @props
         Promise.resolve(@initState(@props))
         .then (@state) => Promise.resolve()
@@ -33,10 +33,9 @@ class Context extends React.Component
       @state = stateFn(@state)
       @emit 'internal:state-updated', @state
       Promise.resolve(@expandTemplate(@props, @state))
-
     .then (templateProps) =>
-      @once 'internal:rendered', => done()
-      @emit 'internal:template-ready', @, templateProps
+      @parent.setState
+        activeContext: @render(templateProps)
 
   # Override
   # Props -> Promise<State>

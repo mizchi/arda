@@ -159,18 +159,18 @@ describe "src/router", ->
       .then ->
         assert $$(document.body.innerHTML)('.content').text() is '2'
 
-    it 'update' #, ->
-      # class Context1 extends Arda.Context
-      #   initState: (props) -> props
-      #   expandTemplate: (props, state) -> state
-      #   @component: class Test extends Arda.Component
-      #     render: -> React.createElement 'div', {className: 'content'}, @props.name
-      #
-      # router = new Arda.Router Arda.DefaultLayout, document.body
-      # router.pushContext(Context1, {name: 1})
-      # .then -> router.activeContext.updateState((state) => {name: 2})
-      # .then =>
-      #   assert $$(document.body.innerHTML)('.content').text() is '2'
+    it 'update' , ->
+      class Context1 extends Arda.Context
+        initState: (props) -> props
+        expandTemplate: (props, state) -> state
+        @component: class Test extends Arda.Component
+          render: -> React.createElement 'div', {className: 'content'}, @props.name
+
+      router = new Arda.Router Arda.DefaultLayout, document.body
+      router.pushContext(Context1, {name: 1})
+      .then -> router.activeContext.updateState((state) => {name: 2})
+      .then ->
+        assert $$(document.body.innerHTML)('.content').text() is '2'
 
   describe 'Lifecycle', ->
     it "fires created | started | resumed | disposed"# , ->

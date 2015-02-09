@@ -122,4 +122,4 @@ class Router
 
   _initContextWithExpanding: (context, props) ->
     context._initByProps(props)
-    .then => Promise.resolve(context.expandTemplate(context.props, context.state))
+    .then => context.expandTemplate(context.props, context.state)
