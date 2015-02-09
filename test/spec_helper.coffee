@@ -11,7 +11,7 @@ global.sinon   = require 'sinon'
 
 cheerio = require 'cheerio'
 global.$$ = (html) -> cheerio.load html
-# console.warn = ->
+console.warn = ->
 
 beforeEach -> @sinon = sinon.sandbox.create()
 afterEach ->

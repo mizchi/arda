@@ -1,4 +1,20 @@
-Context = require './context'
+mixin = require './mixin'
 module.exports =
 class Component extends React.Component
-  dispatch: -> @context.shared.emit arguments...
+  @contextTypes:
+    shared: React.PropTypes.any
+
+  dispatch: ->
+    @context.shared.emit arguments...
+
+  createChildRouter: (node) ->
+    Router = require './router'
+    DefaultLayout = require './default-layout'
+
+    childRouter = new Router(DefaultLayout, node)
+    childRouter
+
+  createContextOnNode: (node, contextClass, props) ->
+    childRouter = @createChildRouter(node)
+    childRouter.pushContext(contextClass, props)
+    .then (context) => Promise.resolve(context)

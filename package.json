@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "eventemitter2": "^0.4.14",
     "inherit": "^2.2.2",
     "inherits": "^2.0.1",
     "xtend": "^4.0.0"

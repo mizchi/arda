@@ -10,30 +10,27 @@ global.Promise = require 'bluebird'
 global.Arda = Arda = require './src'
 
 # Application
-
-class SubComponent extends Arda.Component
-  render: ->
-    React.createElement 'h1', {}, 'Sub'
-
 class SubContext extends Arda.Context
-  @component: SubComponent
+  @component:
+    class SubComponent extends Arda.Component
+      render: ->
+        React.createElement 'h1', {}, 'Sub'
 
 class HelloComponent extends Arda.Component
   componentDidMount: ->
-    subContainer = @refs.container.getDOMNode()
-    new Arda.Router(Arda.DefaultLayout, subContainer)
-    .pushContext(SubContext, {})
-    .then =>
-      console.log 'with SubContext', document.body.innerHTML
+    subRouter = @createChildRouter @refs.container.getDOMNode()
+    subRouter.on 'blank', -> console.log 'became blank'
+    subRouter.pushContext(SubContext, {})
+    .then (context) =>
+      subRouter.popContext()
+    # @createContextOnNode(@refs.container.getDOMNode(), SubContext, {})
 
   render: ->
     React.createElement 'div', {}, [
-      React.createElement 'h1', {}, 'Hello Arda'
-      React.createElement 'div', {ref:'container'}
+      React.createElement 'div', {key: 1, ref:'container'}
     ]
 class HelloContext extends Arda.Context
   @component: HelloComponent
 
 router = new Arda.Router(Arda.DefaultLayout, document.body)
 router.pushContext(HelloContext, {})
-# .then =>

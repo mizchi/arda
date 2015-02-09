@@ -1,20 +1,21 @@
-{EventEmitter} = require 'events'
+# {EventEmitter} = require 'events'
+EventEmitter = require './event-emitter'
 inherits = require 'inherits'
 
 # Context mixin React.Component
 module.exports =
 class Context extends React.Component
+  ##### Properties #####
+  # static contextType: Object
+  # props: Props
+  # state: State
+  # wrapper: Context
+  ######################
 
   @contextTypes:
     shared: React.PropTypes.any
 
   inherits @, EventEmitter
-
-  ##### Properties #####
-  # props: Props
-  # state: State
-  # wrapper: Context
-  ######################
 
   constructor: (@wrapper, @props) ->
     super
@@ -51,7 +52,6 @@ class Context extends React.Component
     component = React.createFactory(@constructor.component)
     React.withContext {shared: @}, =>
       component(templateProps)
-
 
   # Props => ()
   # Update internal props and state

@@ -1,6 +1,65 @@
 require './spec_helper'
-require '../src/component'
+Component = require '../src/component'
 Arda = require '../src'
 
 describe "src/component", ->
-  describe '#render', ->
+  describe '#dispatch', ->
+    it 'use shared context emitter', (done) ->
+      class HelloComponent extends Arda.Component
+        componentDidMount: ->
+          @dispatch 'foo'
+
+        render: ->
+          React.createElement 'div'
+
+      class HelloContext extends Arda.Context
+        @subscribers: [
+          (context, subscribe) ->
+            assert context instanceof Arda.Context
+            subscribe 'foo', (prop) =>
+              subscribe 'bar', =>
+                done()
+        ]
+        @component: HelloComponent
+
+      router = new Arda.Router(Arda.DefaultLayout, document.body)
+      router.pushContext(HelloContext, {}).then (context) =>
+        assert context instanceof Arda.Context
+        context.emit 'bar'
+
+  describe '#createChildRouter', ->
+    it 'create router', (done)->
+      class TestComponent extends Component
+        componentDidMount: ->
+          subRouter = @createChildRouter @refs.container.getDOMNode()
+          assert subRouter instanceof Arda.Router
+          done()
+
+        render: ->
+          React.createElement 'div', {}, [
+            React.createElement 'div', {key: 1, ref:'container'}
+          ]
+
+      c = React.createFactory(TestComponent)
+      React.render c(), document.body
+
+  describe '#createContextOnNode', ->
+    it 'create context', (done) ->
+      class Context extends Arda.Context
+        @component: class Component extends Arda.Component
+          componentDidMount: ->
+            done()
+          render: ->
+            React.createElement 'div'
+
+      class TestComponent extends Component
+        componentDidMount: ->
+          @createContextOnNode(@refs.container.getDOMNode(), Context, {})
+
+        render: ->
+          React.createElement 'div', {}, [
+            React.createElement 'div', {key: 1, ref:'container'}
+          ]
+
+      c = React.createFactory(TestComponent)
+      React.render c(), document.body

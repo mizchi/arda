@@ -6,10 +6,10 @@ WIP
 
 ## TODO for Release(1.0.0)
 
-- [ ] Event Discrypter & Subscriber
+- [x] Event Discrypter & Subscriber
 - [ ] Check disposer with child context
-- [ ] TypeScript definition file
-- [ ] Dogfooding by author's job
+- [x] TypeScript definition file
+- [x] Dogfooding by author's job
 
 ## Minimum Case
 

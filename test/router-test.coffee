@@ -205,3 +205,41 @@ describe "src/router", ->
         assert spy.calledWith('resumed')
         assert spy.calledWith('started')
         assert spy.callCount is 5
+
+  describe 'blank', ->
+    it 'create child context and dispose', (done) ->
+      class SubContext extends Arda.Context
+        @component:
+          class SubComponent extends Arda.Component
+            render: ->
+              React.createElement 'h1', {}, 'Sub'
+
+      class HelloComponent extends Arda.Component
+        createChildRouter: (node) ->
+          childRouter = new Arda.Router(Arda.DefaultLayout, node)
+          # @context.shared.on 'disposed', => childRouter.dispose?()
+          childRouter
+
+        createContextOnNode: (node, contextClass, props) ->
+          childRouter = @createChildRouter(node)
+          childRouter.pushContext(contextClass, props)
+          .then (context) => Promise.resolve(context)
+
+        componentDidMount: ->
+          subRouter = @createChildRouter @refs.container.getDOMNode()
+          subRouter.on 'blank', -> done()
+          subRouter.pushContext(SubContext, {})
+          .then (context) =>
+            subRouter.popContext()
+
+        render: ->
+          React.createElement 'div', {}, [
+            React.createElement 'h1', {}, 'Hello Arda'
+            React.createElement 'div', {ref:'container'}
+          ]
+
+      class HelloContext extends Arda.Context
+        @component: HelloComponent
+
+      router = new Arda.Router(Arda.DefaultLayout, document.body)
+      router.pushContext(HelloContext, {})

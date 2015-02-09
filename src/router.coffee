@@ -1,9 +1,10 @@
-{EventEmitter} = require 'events'
+EventEmitter = require './event-emitter'
 module.exports =
 class Router extends EventEmitter
   # React.Class * ?HTMLElement => Router
   constructor: (layoutComponent, @el)->
     @_locked = false
+    @_disposers = []
     @history = []
 
     if @el
@@ -13,6 +14,25 @@ class Router extends EventEmitter
 
   # () => boolean
   isLocked: -> @_locked
+
+  dispose: ->
+    Promise.all @_disposers.map (disposer) => do disposer
+    .then => new Promsie (done) =>
+      do popUntilBlank = =>
+        if @history.length > 0
+          @popContext().then => popUntilBlank()
+        else
+          done()
+    .then =>
+      @diposed = true
+      @_lock = true
+      delete @history
+      delete @_disposers
+      @removeAllListeners()
+      Object.freeze(@)
+      if @el?
+        React.unmountComponentAtNode(@el)
+      @emit 'disposed'
 
   # typeof Context => Thenable<Boolean>
   pushContext: (contextClass, initialProps = {}) ->
@@ -24,17 +44,18 @@ class Router extends EventEmitter
 
     @activeContext = new contextClass @_rootComponent, initialProps
 
-    @_mountToParent(@activeContext, initialProps).then =>
+    @_mountToParent(@activeContext, initialProps)
+    .then =>
       @history.push
         name: contextClass.name
         props: initialProps
         context: @activeContext
-
       @_unlock()
-
       @activeContext.emit 'created'
       @activeContext.emit 'started'
-      Promise.resolve(@activeContext)
+      @emit 'pushed', @activeContext
+    .then =>
+      @activeContext
 
   # () => Thenable<void>
   popContext: ->
@@ -51,7 +72,7 @@ class Router extends EventEmitter
     )
     .then =>
       @activeContext = @history[@history.length-1]?.context
-      if @activeContext
+      if @activeContext?
         @_mountToParent(@activeContext, @activeContext.props)
       else
         @_unmountAll()
@@ -59,7 +80,12 @@ class Router extends EventEmitter
       if @activeContext
         @activeContext.emit 'started'
         @activeContext.emit 'resumed'
+        @emit 'popped', @activeContext
+      else
+        @emit 'blank'
       @_unlock()
+    .then =>
+      @activeContext
 
   # () => Thenable<Context>
   replaceContext: (contextClass, initialProps = {}) ->
@@ -83,7 +109,10 @@ class Router extends EventEmitter
         props: initialProps
         context: @activeContext
       @_unlock()
-      Promise.resolve(@activeContext)
+      @emit 'replaced', @activeContext
+
+    .then =>
+      @activeContext
 
   #  Context * Object  => Thenable<void>
   _mountToParent: (context, initialProps) ->
@@ -104,7 +133,7 @@ class Router extends EventEmitter
 
   _outputToDOM: (activeContext, props) ->
     @_rootComponent.setState
-      activeContext: activeContext.render(props)
+      activeContext: activeContext?.render(props)
 
   # For test dry run
   _outputToRouterInnerHTML: (activeContext, props) ->
