@@ -23,7 +23,7 @@ class Context extends EventEmitter
       subscriber @, subscribe
 
   # (State => State) => Promise<void>
-  updateState: (stateFn) ->
+  update: (stateFn) ->
     Promise.resolve(
       if !@state? and @props
         Promise.resolve(@initState(@props))

@@ -192,7 +192,7 @@ describe "src/router", ->
 
       router = new Arda.Router Arda.DefaultLayout, document.body
       router.pushContext(Context1, {name: 1})
-      .then -> router.activeContext.updateState((state) => {name: 2})
+      .then -> router.activeContext.update((state) => {name: 2})
       .then ->
         assert $$(document.body.innerHTML)('.content').text() is '2'
 

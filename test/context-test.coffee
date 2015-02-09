@@ -20,11 +20,11 @@ describe "src/context", ->
       context.props = {}
 
       assert !initStateSpy.called
-      context.updateState((state) => {a: state.a+1})
+      context.update((state) => {a: state.a+1})
       .then =>
         assert initStateSpy.calledOnce
         assert updateSpy.calledWith(2)
-        context.updateState((state) => {a: state.a+1})
+        context.update((state) => {a: state.a+1})
       .then =>
         assert initStateSpy.calledOnce
         assert updateSpy.calledWith(3)
