@@ -12,9 +12,6 @@ class Context extends React.Component
   # wrapper: Context
   ######################
 
-  @contextTypes:
-    shared: React.PropTypes.any
-
   inherits @, EventEmitter
 
   constructor: (@wrapper, @props) ->

@@ -1,1 +1,2 @@
-module.exports = require('eventemitter2').EventEmitter2
+module.exports =
+  require('eventemitter2').EventEmitter2

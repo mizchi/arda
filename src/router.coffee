@@ -34,6 +34,11 @@ class Router extends EventEmitter
         React.unmountComponentAtNode(@el)
       @emit 'disposed'
 
+  pushContextAndWaitForBack: (contextClass, initialProps = {}) ->
+    new Promise (done) =>
+      @pushContext(contextClass, initialProps).then (context) =>
+        context.on 'disposed', done
+
   # typeof Context => Thenable<Boolean>
   pushContext: (contextClass, initialProps = {}) ->
     @_lock()

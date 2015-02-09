@@ -2,6 +2,26 @@ require './spec_helper'
 Arda = require '../src/index'
 
 describe "src/router", ->
+  describe '#pushContextAndWaitForBack', ->
+    it "will mount target by pushContext", (done) ->
+      router = new Arda.Router Arda.DefaultLayout, document.body
+      class AutoEndContext extends Arda.Context
+        @component: class AutoEnd extends Arda.Component
+          componentWillMount: ->
+            # It cause back to here
+            setTimeout => router.popContext()
+          render: -> React.createElement 'div', {}, 'test'
+
+      class TestContext extends Arda.Context
+        @component: class Test extends Arda.Component
+          render: -> React.createElement 'div', {}, 'test'
+      router.pushContext(TestContext, {})
+      .then =>
+        assert router.pushContextAndWaitForBack instanceof Function
+        router.pushContextAndWaitForBack(AutoEndContext, {})
+      .then =>
+        done()
+
   describe '#pushContext', ->
     it "will mount target by pushContext", (done) ->
       class TestContext extends Arda.Context
@@ -95,27 +115,31 @@ describe "src/router", ->
       .then ->
         assert router.history.length is 1
 
-    it "fire disposed" #, (done) ->
-      # class Context1 extends Arda.Context
-      #   @component: class Test extends Arda.Component
-      #     render: -> React.createElement 'div', {}, ''
-      #
-      # spy = sinon.spy()
-      # class Context2 extends Arda.Context
-      #   @component: class Test extends Arda.Component
-      #     render: -> React.createElement 'div', {}, ''
-      #
-      #   subscribe: (subscribe) ->
-      #     subscribe 'disposed' , -> spy 'disposed'
-      #
-      # router = new Arda.Router Arda.DefaultLayout, null
-      # router.pushContext(Context1, {})
-      # .then -> router.pushContext(Context2, {})
-      # .then -> router.popContext()
-      # .then ->
-      #   assert spy.calledWith('disposed')
-      #   assert spy.callCount is 1
-      #   done()
+    it "fire disposed", (done) ->
+      class Context1 extends Arda.Context
+        @component: class Test extends Arda.Component
+          render: -> React.createElement 'div', {}, ''
+
+      spy = sinon.spy()
+      class Context2 extends Arda.Context
+        @subscribers: [
+          (context, subscribe) ->
+            subscribe 'disposed' , -> spy 'disposed'
+        ]
+        @component: class Test extends Arda.Component
+          render: -> React.createElement 'div', {}, ''
+
+        # subscribe: (subscribe) ->
+        #   subscribe 'disposed' , -> spy 'disposed'
+
+      router = new Arda.Router Arda.DefaultLayout, null
+      router.pushContext(Context1, {})
+      .then -> router.pushContext(Context2, {})
+      .then -> router.popContext()
+      .then ->
+        assert spy.calledWith('disposed')
+        assert spy.callCount is 1
+        done()
 
   describe '#isLocked', ->
     it "return true if on pushContext or popContext", ->
