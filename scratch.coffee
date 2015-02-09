@@ -12,53 +12,19 @@ global.React = require 'react'
 global.Promise = require 'bluebird'
 Arda = require './src'
 
-class ChildContext extends Arda.Context
-  expandTemplate: (props, state) ->
-    {foo: state.foo}
+window.React = require 'react'
+window.Promise = require 'bluebird'
+Arda = require '../../src/'
 
-  constructor: ->
-    super
-    @on 'disposed', ->
-      console.log '+++++++++ child disposed ++++++++++'
-
-  @component:
-    class Child extends Arda.Component
-      render: ->
-        React.createElement 'div', {}, 'Child:'+@props.foo
-
-class Parent extends Arda.Component
-  childContexts:
-    child: ChildContext
-
-  componentDidMount: ->
-    childContext  = @getChildContextByKey('child')
-
-    # childContext.updateState((state) => {foo: 2})
-    # .then =>
-    #   childContext.updateState((state) => {foo: 4})
-    # .then =>
-    #   @context.shared.updateState((s) => {name: 'changed'})
-    # .then (s) =>
-    #   console.log 'updated', document.body.innerHTML
-
+class HelloComponent extends Arda.Component
   render: ->
-    React.createElement 'div', {}, [
-      React.createElement 'h1', {}, name: @props.name
-      @createChildElement('child', {})
-    ]
+    React.createElement 'h1', {}, 'Hello Arda'
 
-class ParentContext extends Arda.Context
-  initState: (props) -> props
-  expandTemplate: (__, state) -> state
-  @component: Parent
+class HelloContext extends Arda.Context
+  @component: HelloComponent
 
-global.router = new Arda.Router(Arda.DefaultLayout, document.body)
-router.pushContext(ParentContext, {name: 'initial'})
-.then =>
-  router.pushContext(ParentContext, {name: 'initial'})
-.then (willDisposeContext) =>
-  willDisposeContext.on 'disposed', ->
-    console.log 'parent disposed!'
-
-  router.popContext()
-# .then =>
+window.addEventListener 'DOMContentLoaded', ->
+  router = new Arda.Router(Arda.DefaultLayout, document.body)
+  router.pushContext(HelloContext, {})
+  .then =>
+    console.log document.body.innerHTML
