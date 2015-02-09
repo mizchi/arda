@@ -4,7 +4,7 @@ Arda = require '../../src/'
 
 class HelloComponent extends Arda.Component
   render: ->
-    React.createElement 'h1', {}, name: 'Hello Arda'
+    React.createElement 'h1', {}, 'Hello Arda'
 
 class HelloContext extends Arda.Context
   @component: HelloComponent

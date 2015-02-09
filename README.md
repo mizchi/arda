@@ -20,7 +20,7 @@ Arda = require 'arda'
 
 class HelloComponent extends Arda.Component
   render: ->
-    React.createElement 'h1', {}, name: 'Hello Arda'
+    React.createElement 'h1', {}, 'Hello Arda'
 
 class HelloContext extends Arda.Context
   @component: HelloComponent
@@ -43,13 +43,13 @@ class MainContext extends Arda.Context
   @component:
     class Main extends Arda.Component
       render: ->
-        React.createElement 'h1', {}, name: 'Main'
+        React.createElement 'h1', {}, 'Main'
 
 class SubContext extends Arda.Context
   @component:
     class Sub extends Arda.Component
       render: ->
-        React.createElement 'h1', {}, name: 'Sub'
+        React.createElement 'h1', {}, 'Sub'
 
 window.addEventListener 'DOMContentLoaded', ->
   window.router = new Arda.Router(Arda.DefaultLayout, document.body)

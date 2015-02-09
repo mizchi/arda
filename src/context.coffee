@@ -9,7 +9,7 @@ class Context extends EventEmitter
   # static contextType: Object
   # props: Props
   # state: State
-  # wrapper: Context
+  # _component: Component
   ######################
 
   constructor: (@_component, @props) ->
