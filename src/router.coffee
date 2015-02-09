@@ -48,7 +48,6 @@ class Router extends EventEmitter
       lastContext.emit 'paused'
 
     @activeContext = new contextClass @_rootComponent, initialProps
-
     @_mountToParent(@activeContext, initialProps)
     .then =>
       @history.push
@@ -138,13 +137,16 @@ class Router extends EventEmitter
 
   _outputToDOM: (activeContext, props) ->
     @_rootComponent.setState
-      activeContext: activeContext?.render(props)
+      # activeContext: activeContext?.render(props)
+      activeContext: activeContext
+      templateProps: props
 
   # For test dry run
-  _outputToRouterInnerHTML: (activeContext, props) ->
+  _outputToRouterInnerHTML: (activeContext, templateProps) ->
     if activeContext
-      rendered = activeContext.render(props)
+      rendered = React.createFactory(activeContext.constructor.component)(templateProps)
       @innerHTML = React.renderToString rendered
+      # @innerHTML = ''
     else
       @innerHTML = ''
 

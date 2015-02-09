@@ -4,6 +4,7 @@ class Component extends React.Component
     shared: React.PropTypes.any
 
   dispatch: ->
+    # debugger
     @context.shared.emit arguments...
 
   createChildRouter: (node) ->

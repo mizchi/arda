@@ -1,13 +1,19 @@
 Component = require './component'
 
-module.exports =
-class DefaultLayout extends Component
-  constructor: ->
-    super
-    @state =
-      activeContext: null
+T = React.PropTypes
+module.exports = React.createClass
+  childContextTypes:
+    shared: T.any
+
+  getChildContext: ->
+    shared: @state.activeContext
+
+  getInitialState: ->
+    activeContext: null
+    templateProps: {}
 
   render: ->
-    @state.activeContext ? React.createElement 'div'
-    # React.createElement 'div', {className: 'wrapper'}, [
-    # ]
+    if @state.activeContext?
+      React.createFactory(@state.activeContext?.constructor.component)(@state.templateProps)
+    else
+      React.createElement 'div'

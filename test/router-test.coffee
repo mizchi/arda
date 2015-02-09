@@ -170,7 +170,7 @@ describe "src/router", ->
       .then ->
         assert router.isLocked() is false
 
-  context 'with DOM', ->
+  context 'withDOM', ->
     it 'render', ->
       class Context1 extends Arda.Context
         @component: class Test extends Arda.Component
