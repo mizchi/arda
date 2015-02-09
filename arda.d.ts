@@ -12,6 +12,7 @@ declare module Arda {
   export class Router {
     constructor(layout: Component<any, any>, el: HTMLElement);
     pushState(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
+    pushStateAndWaitForBack(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
     replaceState(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
     popState(): Thenable<Context<any, any, any>>;
   }
@@ -30,4 +31,20 @@ declare module Arda {
     expandTemplate(p: Props, s: State): TemplateProps | Thenable<TemplateProps>;
     update(updater: (s: State)=> State): Thenable<any>;
   }
+
+  export function subscriber<A, B>(
+    fn: (
+      context: Context<A, B, any>,
+      subscribe: (
+        name: string,
+        fn: (...args: any[]) => void) => void
+    ) => void
+  ): (
+    fn: (
+      context: Context<A, B, any>,
+      subscribe: (
+        name: string,
+        fn: (...args: any[]) => void) => void
+    ) => void
+  ) => void
 }
