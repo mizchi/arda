@@ -1,4 +1,5 @@
 require './spec_helper'
+Arda = require '../src'
 Context = require '../src/context'
 
 describe "src/context", ->
@@ -27,3 +28,36 @@ describe "src/context", ->
       assert initStateSpy.calledOnce
       assert updateSpy.calledWith(3)
       assert updateSpy.calledTwice
+
+  describe '#render', ->
+    it "should render child context", ->
+      class ChildContext extends Arda.Context
+        @component: class Child extends Arda.Component
+          render: -> React.createElement 'h1', {}, 'Child'
+
+      class Parent extends Arda.Component
+        render: ->
+          child = new ChildContext
+          React.createElement 'div', {}, [
+            React.createElement 'h1', {}, 'Parent'
+            child.render({})
+          ]
+      React.render React.createFactory(Parent)({}), document.body
+      assert document.body.innerHTML.indexOf('Parent') > -1
+      assert document.body.innerHTML.indexOf('Child') > -1
+
+    # it "should update render on child", ->
+    #   class ChildContext extends Arda.Context
+    #     @component: class Child extends Arda.Component
+    #       render: -> React.createElement 'h1', {}, 'Child'
+    #
+    #   class Parent extends Arda.Component
+    #     render: ->
+    #       child = new ChildContext
+    #       React.createElement 'div', {}, [
+    #         React.createElement 'h1', {}, 'Parent'
+    #         child.render({})
+    #       ]
+    #   React.render React.createFactory(Parent)({}), document.body
+    #   assert document.body.innerHTML.indexOf('Parent') > -1
+    #   assert document.body.innerHTML.indexOf('Child') > -1

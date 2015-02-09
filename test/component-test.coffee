@@ -1,32 +1,9 @@
 require './spec_helper'
 require '../src/component'
 Arda = require '../src'
+
 describe "src/component", ->
-  describe '#createChildElement', ->
-    it "should render child context", ->
-      class ChildContext extends Arda.Context
-        @component:
-          class Child extends Arda.Component
-            render: ->
-              React.createElement 'div', {}, [
-                React.createElement 'h1', {}, 'Child'
-              ]
-
-      class Parent extends Arda.Component
-        constructor: ->
-          super
-          @state = child: new ChildContext
-
-        render: ->
-          React.createElement 'div', {}, [
-            React.createElement 'h1', {}, 'Parent'
-            @state.child.render({})
-          ]
-
-      React.render React.createFactory(Parent)({}), document.body
-      assert document.body.innerHTML.indexOf('Parent') > -1
-      assert document.body.innerHTML.indexOf('Child') > -1
-
+  describe '#render', ->
     it "can update inner child" #, (done) ->
       # class ChildContext extends Arda.Context
       #   expandTemplate: (__, state) -> state
