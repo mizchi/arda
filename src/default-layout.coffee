@@ -9,8 +9,5 @@ class DefaultLayout extends Component
 
   render: ->
     React.createElement 'div', {className: 'ow-container'}, [
-      if @state.activeContext
-        @createRootElementByContext(@state.activeContext, @state.activeTemplateProps)
-      else
-        null
+      @getContextComponent()
     ]

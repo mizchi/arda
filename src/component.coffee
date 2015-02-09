@@ -63,3 +63,9 @@ class Component extends React.Component
       component.forceUpdate()
       context.emit 'internal:rendered'
     context
+
+  getContextComponent: ->
+    if @state.activeContext
+      @createRootElementByContext(@state.activeContext, @state.activeTemplateProps)
+    else
+      null
