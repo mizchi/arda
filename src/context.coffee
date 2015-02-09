@@ -21,15 +21,15 @@ class Context extends EventEmitter
     subscribers.forEach (subscriber) =>
       subscriber @, subscribe
 
-  # (State => State) => Promise<void>
-  update: (stateFn) ->
+  # (State => State)? => Promise<void>
+  update: (stateFn = null) ->
     Promise.resolve(
       if !@state? and @props
         Promise.resolve(@initState(@props))
         .then (@state) => Promise.resolve()
     )
     .then =>
-      @state = stateFn(@state)
+      @state = stateFn?(@state) ? @state
       @expandTemplate(@props, @state)
     .then (templateProps) =>
       @_component.setState
