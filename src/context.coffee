@@ -1,10 +1,15 @@
 {EventEmitter} = require 'events'
+inherits = require 'inherits'
 
+# Context mixin React.Component
 module.exports =
-class Context extends EventEmitter
+class Context # extends React.Component
+  ## Properties
   # component: Component
   # props: Props
   # state: State
+  inherits @, React.Component
+  inherits @, EventEmitter
 
   # (State => State) => Promise<void>
   updateState: (stateFn) -> new Promise (done) =>

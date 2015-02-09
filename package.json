@@ -9,6 +9,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "inherit": "^2.2.2",
+    "inherits": "^2.0.1",
+    "xtend": "^4.0.0"
   },
   "devDependencies": {
     "bluebird": "^2.9.6",
