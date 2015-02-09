@@ -11,7 +11,7 @@ class Context extends React.Component
 
   inherits @, EventEmitter
 
-  renderWithTemplateProps: (templateProps) ->
+  render: (templateProps = {}) ->
     component = React.createFactory(@constructor.component)
     React.withContext {shared: context}, =>
       component(templateProps)

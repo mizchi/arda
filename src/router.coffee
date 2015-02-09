@@ -99,12 +99,11 @@ class Router
     # setState
     if @el?
       @_rootComponent.setState
-        activeContext: activeContext.renderWithTemplateProps(props)
-        activeTemplateProps: props
+        activeContext: activeContext.render(props)
     else
       # for test
       if activeContext
-        rendered = React.createFactory(activeContext.constructor.component)(props)
+        rendered = activeContext.render(props)
         @innerHTML = React.renderToString rendered
       else
         @innerHTML = ''

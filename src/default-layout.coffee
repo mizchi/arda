@@ -9,6 +9,4 @@ class DefaultLayout extends Component
       activeTemplateProps: {}
 
   render: ->
-    React.createElement 'div', {className: 'ow-container'}, [
-      @state.activeContext
-    ]
+    @state.activeContext ? React.createElement 'div'
