@@ -173,34 +173,35 @@ describe "src/router", ->
         assert $$(document.body.innerHTML)('.content').text() is '2'
 
   describe 'Lifecycle', ->
-    it "fires created | started | resumed | disposed"# , ->
-      # spy = sinon.spy()
-      # class Context1 extends Arda.Context
-      #   @component: class Test extends Arda.Component
-      #     render: -> React.createElement 'div', {}, ''
-      #   subscribe: (subscribe) ->
-      #     subscribe 'created', -> spy 'created'
-      #     subscribe 'started', -> spy 'started'
-      #     subscribe 'paused' , -> spy 'paused'
-      #     subscribe 'resumed' , -> spy 'resumed'
-      #
-      # class Context2 extends Arda.Context
-      #   @component: class Test extends Arda.Component
-      #     render: -> React.createElement 'div', {}, ''
-      #
-      # router = new Arda.Router Arda.DefaultLayout, null
-      # assert !router.activeContext
-      # router.pushContext(Context1, {}).then ->
-      #   assert spy.calledWith('created')
-      #   assert spy.calledWith('started')
-      #   assert spy.callCount is 2
-      #
-      #   router.pushContext(Context2, {})
-      # .then ->
-      #   assert spy.calledWith('paused')
-      #   assert spy.callCount is 3
-      #   router.popContext()
-      # .then ->
-      #   assert spy.calledWith('resumed')
-      #   assert spy.calledWith('started')
-      #   assert spy.callCount is 5
+    it "fires created | started | resumed | disposed", ->
+      spy = sinon.spy()
+      class Context1 extends Arda.Context
+        @component: class Test extends Arda.Component
+          render: -> React.createElement 'div', {}, ''
+        @subscribers: [
+          (component, subscribe) ->
+            subscribe 'created', -> spy 'created'
+            subscribe 'started', -> spy 'started'
+            subscribe 'paused' , -> spy 'paused'
+            subscribe 'resumed' , -> spy 'resumed'
+        ]
+      class Context2 extends Arda.Context
+        @component: class Test extends Arda.Component
+          render: -> React.createElement 'div', {}, ''
+
+      router = new Arda.Router Arda.DefaultLayout, null
+      assert !router.activeContext
+      router.pushContext(Context1, {}).then ->
+        assert spy.calledWith('created')
+        assert spy.calledWith('started')
+        assert spy.callCount is 2
+
+        router.pushContext(Context2, {})
+      .then ->
+        assert spy.calledWith('paused')
+        assert spy.callCount is 3
+        router.popContext()
+      .then ->
+        assert spy.calledWith('resumed')
+        assert spy.calledWith('started')
+        assert spy.callCount is 5

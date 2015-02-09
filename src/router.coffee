@@ -1,5 +1,6 @@
+{EventEmitter} = require 'events'
 module.exports =
-class Router
+class Router extends EventEmitter
   # React.Class * ?HTMLElement => Router
   constructor: (layoutComponent, @el)->
     @_locked = false

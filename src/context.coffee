@@ -4,23 +4,24 @@ inherits = require 'inherits'
 # Context mixin React.Component
 module.exports =
 class Context extends React.Component
+
+  @contextTypes:
+    shared: React.PropTypes.any
+
   inherits @, EventEmitter
 
   ##### Properties #####
   # props: Props
   # state: State
-  # parent: Context
+  # wrapper: Context
   ######################
 
-  render: (templateProps = {}) ->
-    component = React.createFactory(@constructor.component)
-    React.withContext {shared: context}, =>
-      component(templateProps)
-
-  constructor: (parent, props) ->
+  constructor: (@wrapper, @props) ->
     super
-    @parent = parent
-    @props = props if props
+    subscribers = @constructor.subscribers ? []
+    subscribers.forEach (subscriber) =>
+      subscriber @, (eventName, callback) =>
+        @on eventName, callback
 
   # (State => State) => Promise<void>
   updateState: (stateFn) ->
@@ -31,10 +32,9 @@ class Context extends React.Component
     )
     .then =>
       @state = stateFn(@state)
-      @emit 'internal:state-updated', @state
       Promise.resolve(@expandTemplate(@props, @state))
     .then (templateProps) =>
-      @parent.setState
+      @wrapper.setState
         activeContext: @render(templateProps)
 
   # Override
@@ -47,7 +47,11 @@ class Context extends React.Component
 
   # Override
   # Register
-  subscribe: (subscribe) ->
+  render: (templateProps = {}) ->
+    component = React.createFactory(@constructor.component)
+    React.withContext {shared: @}, =>
+      component(templateProps)
+
 
   # Props => ()
   # Update internal props and state

@@ -6,7 +6,8 @@ class DefaultLayout extends Component
     super
     @state =
       activeContext: null
-      activeTemplateProps: {}
 
   render: ->
     @state.activeContext ? React.createElement 'div'
+    # React.createElement 'div', {className: 'wrapper'}, [
+    # ]
