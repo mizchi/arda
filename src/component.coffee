@@ -37,23 +37,6 @@ class Component extends React.Component
     # return with cache
     @_childContextElementCaches[key] = React.withContext {shared: context}, => component(ref: key)
 
-  # string * Object => React.Element
-  createRootElementByContext: (context, props) ->
-    # TODO: subscribe or not
-    context = @_createRootContext(context)
-    component = React.createFactory(context.constructor.component)
-    React.withContext {shared: context}, =>
-      component(props)
-
-  # string * typeof Context => Context
-  _createRootContext: (context) ->
-    context.on 'internal:template-ready', (__, templateProps) =>
-      @_component?.setState
-        activeContext: context
-        activeTemplateProps: templateProps
-      context.emit 'internal:rendered'
-    context
-
   # string * typeof Context => Context
   _createChildContext: (contextKey, context, parent) ->
     parentComponent = @
@@ -63,9 +46,3 @@ class Component extends React.Component
       component.forceUpdate()
       context.emit 'internal:rendered'
     context
-
-  getContextComponent: ->
-    if @state.activeContext
-      @createRootElementByContext(@state.activeContext, @state.activeTemplateProps)
-    else
-      null

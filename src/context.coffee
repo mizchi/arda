@@ -3,13 +3,23 @@ inherits = require 'inherits'
 
 # Context mixin React.Component
 module.exports =
-class Context # extends React.Component
+class Context extends React.Component
   ## Properties
-  # component: Component
   # props: Props
   # state: State
-  inherits @, React.Component
+  # parent: Context
+
   inherits @, EventEmitter
+
+  renderWithTemplateProps: (templateProps) ->
+    component = React.createFactory(@constructor.component)
+    React.withContext {shared: context}, =>
+      component(templateProps)
+
+  constructor: (parent, props) ->
+    super
+    @parent = parent
+    @props = props if props
 
   # (State => State) => Promise<void>
   updateState: (stateFn) -> new Promise (done) =>

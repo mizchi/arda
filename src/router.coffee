@@ -2,9 +2,13 @@ module.exports =
 class Router
   # React.Class * ?HTMLElement => Router
   constructor: (layoutComponent, @el)->
-    @_layout = React.createFactory(layoutComponent)()
     @_locked = false
     @history = []
+
+    if @el
+      Layout = React.createFactory(layoutComponent)
+      @_rootComponent = React.render Layout(), @el
+      @_rootComponent.isRoot = true
 
   # () => boolean
   isLocked: -> @_locked
@@ -12,18 +16,19 @@ class Router
   # typeof Context => Thenable<Boolean>
   pushContext: (contextClass, initialProps = {}) ->
     @_lock()
-    lastContext = @activeContext
-    if lastContext
+
+    # check
+    if lastContext = @activeContext
       lastContext.emit 'paused'
 
-    @activeContext = context = @_createContext contextClass
-    @_mount(context, initialProps).then =>
-      context.component = @_component
+    @activeContext = new contextClass @_rootComponent, initialProps
 
+    @_mountToParent(@activeContext, initialProps).then =>
       @history.push
         name: contextClass.name
         props: initialProps
-        context: context
+        context: @activeContext
+
       @_unlock()
 
       @activeContext.emit 'created'
@@ -36,17 +41,17 @@ class Router
       throw 'history stack is null'
 
     @_lock()
-    lastContext = @activeContext
     @history.pop()
 
     # emit disposed in context.dispose
     Promise.resolve(
-      if lastContext
+      if lastContext = @activeContext
         @_disposeContext(lastContext)
-    ).then =>
+    )
+    .then =>
       @activeContext = @history[@history.length-1]?.context
       if @activeContext
-        @_mount(@activeContext, @activeContext.props)
+        @_mountToParent(@activeContext, @activeContext.props)
       else
         @_unmountAll()
     .then =>
@@ -66,10 +71,10 @@ class Router
       if lastContext then @_disposeContext(lastContext) else null
     )
     .then =>
-      @activeContext = @_createContext(contextClass)
+      @activeContext = new contextClass @_rootComponent, initialProps
       @activeContext.emit 'created'
       @activeContext.emit 'started'
-      @_mount(@activeContext, initialProps)
+      @_mountToParent(@activeContext, initialProps)
     .then =>
       @history.pop()
       @history.push
@@ -80,23 +85,22 @@ class Router
       Promise.resolve(@activeContext)
 
   #  Context * Object  => Thenable<void>
-  _mount: (context, initialProps) -> new Promise (done) =>
-    @_initContextWithExpanding(context, initialProps).then (templateProps) =>
-      @_renderOrUpdate(context, templateProps).then => done()
+  _mountToParent: (context, initialProps) ->
+    @_initContextWithExpanding(context, initialProps)
+    .then (templateProps) =>
+      @_outputByEnv(context, templateProps)
 
   #  () => Thenable<void>
   _unmountAll: ->
-    @_renderOrUpdate(null)
+    @_outputByEnv(null)
 
   #  React.Element => Thenable<void>
-  _renderOrUpdate: (activeContext, props) -> new Promise (done) =>
-    # render
-    if !@_component? and @el?
-      @_component = React.render @_layout, @el
-
+  _outputByEnv: (activeContext, props) ->
     # setState
     if @el?
-      @_component.setState {activeContext, activeTemplateProps: props}
+      @_rootComponent.setState
+        activeContext: activeContext.renderWithTemplateProps(props)
+        activeTemplateProps: props
     else
       # for test
       if activeContext
@@ -104,28 +108,9 @@ class Router
         @innerHTML = React.renderToString rendered
       else
         @innerHTML = ''
-    done()
-
-  #  React.Element => Thenable<void>
-  _createContext: (contextClass) ->
-    context = new contextClass
-    context.subscribe (eventName, fn) =>
-      context.on eventName, fn
-    context.on 'internal:template-ready', (context, templateProps) =>
-      if @activeContext isnt context
-        console.info context.constructor.name + ' is not active'
-        return
-
-      @_lock()
-      @_component?.setState
-        activeContext: context
-        activeTemplateProps: templateProps
-      @_unlock()
-      context.emit 'internal:rendered'
-
-    context
 
   _unlock: -> @_locked = false
+
   _lock: -> @_locked = true
 
   _disposeContext: (context) ->

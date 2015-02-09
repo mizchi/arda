@@ -1,4 +1,5 @@
 Component = require './component'
+
 module.exports =
 class DefaultLayout extends Component
   constructor: ->
@@ -9,5 +10,5 @@ class DefaultLayout extends Component
 
   render: ->
     React.createElement 'div', {className: 'ow-container'}, [
-      @getContextComponent()
+      @state.activeContext
     ]
