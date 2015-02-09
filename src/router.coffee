@@ -96,17 +96,22 @@ class Router
 
   #  React.Element => Thenable<void>
   _outputByEnv: (activeContext, props) ->
-    # setState
     if @el?
-      @_rootComponent.setState
-        activeContext: activeContext.render(props)
+      @_outputToDOM(activeContext, props)
     else
-      # for test
-      if activeContext
-        rendered = activeContext.render(props)
-        @innerHTML = React.renderToString rendered
-      else
-        @innerHTML = ''
+      @_outputToRouterInnerHTML(activeContext, props)
+
+  _outputToDOM: (activeContext, props) ->
+    @_rootComponent.setState
+      activeContext: activeContext.render(props)
+
+  # For test dry run
+  _outputToRouterInnerHTML: (activeContext, props) ->
+    if activeContext
+      rendered = activeContext.render(props)
+      @innerHTML = React.renderToString rendered
+    else
+      @innerHTML = ''
 
   _unlock: -> @_locked = false
 
