@@ -1,4 +1,3 @@
-mixin = require './mixin'
 module.exports =
 class Component extends React.Component
   @contextTypes:
