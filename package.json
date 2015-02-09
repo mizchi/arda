@@ -1,18 +1,14 @@
 {
   "name": "arda",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --require espower-coffee/guess test/*.coffee -t 200"
+    "test": "./node_modules/.bin/mocha --require espower-coffee/guess test/*.coffee -t 100"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "eventemitter2": "^0.4.14",
-    "inherit": "^2.2.2",
-    "inherits": "^2.0.1",
-    "xtend": "^4.0.0"
   },
   "devDependencies": {
     "bluebird": "^2.9.6",

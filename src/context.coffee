@@ -1,6 +1,5 @@
 # {EventEmitter} = require 'events'
 EventEmitter = require './event-emitter'
-inherits = require 'inherits'
 
 # Context mixin React.Component
 module.exports =
