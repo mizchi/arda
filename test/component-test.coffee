@@ -13,20 +13,19 @@ describe "src/component", ->
               ]
 
       class Parent extends Arda.Component
-        childContexts:
-          child: ChildContext
+        constructor: ->
+          super
+          @state = child: new ChildContext
 
         render: ->
-          assert @getChildContextByKey('child')
-
           React.createElement 'div', {}, [
             React.createElement 'h1', {}, 'Parent'
-            @createChildElement('child')
+            @state.child.render({})
           ]
 
       React.render React.createFactory(Parent)({}), document.body
-      assert document.body.innerHTML.indexOf 'Parent' > -1
-      assert document.body.innerHTML.indexOf 'Child' > -1
+      assert document.body.innerHTML.indexOf('Parent') > -1
+      assert document.body.innerHTML.indexOf('Child') > -1
 
     it "can update inner child" #, (done) ->
       # class ChildContext extends Arda.Context
