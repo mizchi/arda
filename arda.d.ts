@@ -27,9 +27,10 @@ declare module Arda {
   extends Component<TemplateProps, any> {
     static rootComponent: typeof Component;
     static subscribers: Function[];
+    _component: Component<TemplateProps, any>;
     initState(p: Props): State | Thenable<State>;
     expandTemplate(p: Props, s: State): TemplateProps | Thenable<TemplateProps>;
-    update(updater: (s: State)=> State): Thenable<any>;
+    update(updater?: (s: State)=> State): Thenable<any>;
   }
 
   export function subscriber<A, B>(
