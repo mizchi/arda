@@ -23,11 +23,14 @@ declare module Arda {
     render(): void;
   }
 
-  export class Context<Props, State, TemplateProps>
-  extends Component<TemplateProps, any> {
+  export class Context<Props, State, TemplateProps> {
+    props: Props;
+    state: State;
+
     static rootComponent: typeof Component;
     static subscribers: Function[];
     _component: Component<TemplateProps, any>;
+    getActiveComponent(): any;
     initState(p: Props): State | Thenable<State>;
     expandTemplate(p: Props, s: State): TemplateProps | Thenable<TemplateProps>;
     update(updater?: (s: State)=> State): Thenable<any>;

@@ -16,6 +16,8 @@ class Context extends EventEmitter
     subscribers = @constructor.subscribers ? []
     @delegateSubscriber (eventName, callback) => @on eventName, callback
 
+  getActiveComponent: -> @_component.refs.root
+
   delegateSubscriber: (subscribe) ->
     subscribers = @constructor.subscribers ? []
     subscribers.forEach (subscriber) =>

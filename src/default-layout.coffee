@@ -1,5 +1,3 @@
-Component = require './component'
-
 T = React.PropTypes
 module.exports = React.createClass
   childContextTypes:
@@ -14,6 +12,7 @@ module.exports = React.createClass
 
   render: ->
     if @state.activeContext?
+      @state.templateProps.ref = 'root'
       React.createFactory(@state.activeContext?.constructor.component)(@state.templateProps)
     else
       React.createElement 'div'
