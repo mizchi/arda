@@ -124,7 +124,7 @@ describe "src/router", ->
       class Context2 extends Arda.Context
         @subscribers: [
           (context, subscribe) ->
-            subscribe 'disposed' , -> spy 'disposed'
+            subscribe 'context:disposed' , -> spy 'disposed'
         ]
         @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
@@ -204,10 +204,10 @@ describe "src/router", ->
           render: -> React.createElement 'div', {}, ''
         @subscribers: [
           (component, subscribe) ->
-            subscribe 'created', -> spy 'created'
-            subscribe 'started', -> spy 'started'
-            subscribe 'paused' , -> spy 'paused'
-            subscribe 'resumed' , -> spy 'resumed'
+            subscribe 'context:created', -> spy 'created'
+            subscribe 'context:started', -> spy 'started'
+            subscribe 'context:paused' , -> spy 'paused'
+            subscribe 'context:resumed' , -> spy 'resumed'
         ]
       class Context2 extends Arda.Context
         @component: class Test extends Arda.Component

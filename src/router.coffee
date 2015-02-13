@@ -37,7 +37,7 @@ class Router extends EventEmitter
   pushContextAndWaitForBack: (contextClass, initialProps = {}) ->
     new Promise (done) =>
       @pushContext(contextClass, initialProps).then (context) =>
-        context.on 'disposed', done
+        context.on 'context:disposed', done
 
   # typeof Context => Thenable<Boolean>
   pushContext: (contextClass, initialProps = {}) ->
@@ -45,7 +45,7 @@ class Router extends EventEmitter
 
     # check
     if lastContext = @activeContext
-      lastContext.emit 'paused'
+      lastContext.emit 'context:paused'
 
     @activeContext = new contextClass @_rootComponent, initialProps
     @_mountToParent(@activeContext, initialProps)
@@ -55,8 +55,8 @@ class Router extends EventEmitter
         props: initialProps
         context: @activeContext
       @_unlock()
-      @activeContext.emit 'created'
-      @activeContext.emit 'started'
+      @activeContext.emit 'context:created'
+      @activeContext.emit 'context:started'
       @emit 'pushed', @activeContext
     .then =>
       @activeContext
@@ -82,8 +82,8 @@ class Router extends EventEmitter
         @_unmountAll()
     .then =>
       if @activeContext
-        @activeContext.emit 'started'
-        @activeContext.emit 'resumed'
+        @activeContext.emit 'context:started'
+        @activeContext.emit 'context:resumed'
         @emit 'popped', @activeContext
       else
         @emit 'blank'
@@ -103,8 +103,8 @@ class Router extends EventEmitter
     )
     .then =>
       @activeContext = new contextClass @_rootComponent, initialProps
-      @activeContext.emit 'created'
-      @activeContext.emit 'started'
+      @activeContext.emit 'context:created'
+      @activeContext.emit 'context:started'
       @_mountToParent(@activeContext, initialProps)
     .then =>
       @history.pop()
@@ -113,7 +113,7 @@ class Router extends EventEmitter
         props: initialProps
         context: @activeContext
       @_unlock()
-      @emit 'replaced', @activeContext
+      @emit 'router:replaced', @activeContext
 
     .then =>
       @activeContext
@@ -156,7 +156,7 @@ class Router extends EventEmitter
   _disposeContext: (context) ->
     delete context.props
     delete context.state
-    context.emit 'disposed'
+    context.emit 'context:disposed'
     context.removeAllListeners?()
     context.disposed = true
     Object.freeze(context)
