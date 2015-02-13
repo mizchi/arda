@@ -251,7 +251,7 @@ describe "src/router", ->
 
         componentDidMount: ->
           subRouter = @createChildRouter @refs.container.getDOMNode()
-          subRouter.on 'blank', -> done()
+          subRouter.on 'router:blank', -> done()
           subRouter.pushContext(SubContext, {})
           .then (context) =>
             subRouter.popContext()

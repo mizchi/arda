@@ -32,7 +32,7 @@ class Router extends EventEmitter
       Object.freeze(@)
       if @el?
         React.unmountComponentAtNode(@el)
-      @emit 'disposed'
+      @emit 'router:disposed'
 
   pushContextAndWaitForBack: (contextClass, initialProps = {}) ->
     new Promise (done) =>
@@ -57,7 +57,7 @@ class Router extends EventEmitter
       @_unlock()
       @activeContext.emit 'context:created'
       @activeContext.emit 'context:started'
-      @emit 'pushed', @activeContext
+      @emit 'router:pushed', @activeContext
     .then =>
       @activeContext
 
@@ -84,9 +84,9 @@ class Router extends EventEmitter
       if @activeContext
         @activeContext.emit 'context:started'
         @activeContext.emit 'context:resumed'
-        @emit 'popped', @activeContext
+        @emit 'router:popped', @activeContext
       else
-        @emit 'blank'
+        @emit 'router:blank'
       @_unlock()
     .then =>
       @activeContext
