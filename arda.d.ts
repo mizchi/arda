@@ -22,6 +22,10 @@ declare module Arda {
     popContext(): Thenable<Context<any, any, any>>;
   }
 
+  export var mixin: {
+    dispatch: (eventName: string, ...args: any[]) => boolean;
+  };
+
   // Arda.Component extends React.Component
   export class Component<TemplateProps, InternalState> {
     refs: any;
