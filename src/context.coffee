@@ -14,7 +14,18 @@ class Context extends EventEmitter
   constructor: (@_component, @props) ->
     super
     subscribers = @constructor.subscribers ? []
-    @delegateSubscriber (eventName, callback) => @on eventName, callback
+    @_onDisposes = []
+
+    @delegateSubscriber (eventName, callback) =>
+      if callback?
+        return @on eventName, callback
+      else
+        unless Rx?
+          throw new Error 'you need callback as second argument if you don\'t have Rx'
+        return Rx.Node.fromEvent @, eventName
+
+  dispose: ->
+    Promise.all(@_onDisposes)
 
   getActiveComponent: -> @_component.refs.root
 

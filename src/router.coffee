@@ -158,6 +158,7 @@ class Router extends EventEmitter
     delete context.state
     context.emit 'context:disposed'
     context.removeAllListeners?()
+    context.dispose()
     context.disposed = true
     Object.freeze(context)
 
