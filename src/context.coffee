@@ -16,7 +16,7 @@ class Context extends EventEmitter
     subscribers = @constructor.subscribers ? []
     @_onDisposes = []
 
-    @delegateSubscriber (eventName, callback) =>
+    @delegate (eventName, callback) =>
       if callback?
         return @on eventName, callback
       else
@@ -29,7 +29,7 @@ class Context extends EventEmitter
 
   getActiveComponent: -> @_component.refs.root
 
-  delegateSubscriber: (subscribe) ->
+  delegate: (subscribe) ->
     subscribers = @constructor.subscribers ? []
     subscribers.forEach (subscriber) =>
       subscriber @, subscribe
@@ -46,7 +46,7 @@ class Context extends EventEmitter
       # ignore undefined
       if nextState?
         @state = nextState
-      
+
       @expandTemplate(@props, @state)
     .then (templateProps) =>
       @_component.setState

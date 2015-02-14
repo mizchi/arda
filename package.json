@@ -8,8 +8,7 @@
   },
   "author": "",
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "bluebird": "^2.9.6",
     "cheerio": "^0.18.0",

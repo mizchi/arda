@@ -27,6 +27,47 @@ describe "src/component", ->
         assert context instanceof Arda.Context
         context.emit 'bar'
 
+    context 'with Rx', ->
+      beforeEach -> global.Rx = require 'rx'
+      afterEach  -> delete global.Rx
+
+      it '`subscribe` returns Rx subscription', (done) ->
+        class HelloComponent extends Arda.Component
+          componentDidMount: -> @dispatch 'foo'
+          render: -> React.createElement 'div'
+
+        class HelloContext extends Arda.Context
+          @component: HelloComponent
+          @subscribers: [
+            (context, subscribe) ->
+              fooStream = subscribe 'foo'
+              fooStream.subscribe (props) ->
+                done()
+          ]
+        router = new Arda.Router(Arda.DefaultLayout, document.body)
+        router.pushContext(HelloContext, {})
+
+    context 'without Rx', ->
+      beforeEach  -> delete global.Rx
+      it '`subscribe` throw with 1 argument', (done) ->
+        class HelloComponent extends Arda.Component
+          componentDidMount: -> @dispatch 'foo'
+          render: -> React.createElement 'div'
+
+        class HelloContext extends Arda.Context
+          @subscribers: [
+            (context, subscribe) ->
+              try
+                fooStream = subscribe 'foo'
+                done 1
+              catch e
+                done()
+          ]
+          @component: HelloComponent
+
+        router = new Arda.Router(Arda.DefaultLayout, document.body)
+        router.pushContext(HelloContext, {})
+
   describe '#createChildRouter', ->
     it 'create router', (done)->
       class TestComponent extends Component

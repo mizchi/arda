@@ -16,7 +16,7 @@ class ClickerContext extends Arda.Context
   expandTemplate: ->
     cnt: @state.cnt
 
-  delegateSubscriber: (subscribe) ->
+  delegate: (subscribe) ->
     super
     subscribe 'created', -> console.log 'created'
     subscribe 'hello:++', ->
