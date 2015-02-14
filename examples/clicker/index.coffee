@@ -18,7 +18,7 @@ class ClickerContext extends Arda.Context
 
   delegate: (subscribe) ->
     super
-    subscribe 'created', -> console.log 'created'
+    subscribe 'context:created', -> console.log 'created'
     subscribe 'hello:++', ->
       @update (s) => cnt: s.cnt+1
 
