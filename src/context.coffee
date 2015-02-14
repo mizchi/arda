@@ -31,7 +31,11 @@ class Context extends EventEmitter
         .then (@state) => Promise.resolve()
     )
     .then =>
-      @state = stateFn?(@state) ? @state
+      nextState = stateFn?(@state) ? @state
+      # ignore undefined
+      if nextState?
+        @state = nextState
+      
       @expandTemplate(@props, @state)
     .then (templateProps) =>
       @_component.setState

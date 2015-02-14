@@ -33,7 +33,7 @@ declare module Arda {
     getActiveComponent(): any;
     initState(p: Props): State | Thenable<State>;
     expandTemplate(p: Props, s: State): TemplateProps | Thenable<TemplateProps>;
-    update(updater?: (s: State)=> State): Thenable<any>;
+    update(updater?: (s: State)=> State | void): Thenable<any>;
   }
 
   export function subscriber<A, B>(

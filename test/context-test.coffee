@@ -4,6 +4,24 @@ Context = require '../src/context'
 
 describe "src/context", ->
   describe '#update', ->
+    it "update state by result of function", ->
+      class Ctx extends Context
+        initState: (props) -> {a: 1}
+      context = new Ctx setState: (templateProps) ->
+      context.props = {}
+      context.update((state) => {a: state.a+1})
+      .then =>
+        assert.deepEqual context.state, {a: 2}
+
+    it "update with side effect if result of function is undefined ", ->
+      class Ctx extends Context
+        initState: (props) -> {a: 1}
+      context = new Ctx setState: (templateProps) ->
+      context.props = {}
+      context.update (state) => state.a = 100; undefined
+      .then =>
+        assert.deepEqual context.state, {a: 100}
+
     it "call initState if props is null", ->
       initStateSpy = sinon.spy()
       updateSpy = sinon.spy()
