@@ -1,5 +1,5 @@
 declare module Arda {
-  // Promise
+  // Agnostic Promise
   export interface Thenable<R> {
     then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
     then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => U): Thenable<U>;
@@ -7,6 +7,12 @@ declare module Arda {
     then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
     then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => U): Thenable<U>;
     then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<U>;
+    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<any>;
+    then<U>(onFulfilled?: (value: any) => any, onRejected?: (error: any) => void): Thenable<any>;
+    // TODO: fix this optional later
+    catch?<U>(onRejected?: (error: any) => U): Thenable<U>;
+    catch?<U>(onRejected?: (error: any) => void): Thenable<U>;
+    catch?(onRejected?: (error: any) => void): Thenable<any>;
   }
 
   export class Router {
@@ -20,35 +26,46 @@ declare module Arda {
   export class Component<TemplateProps, InternalState> {
     props: TemplateProps;
     state: InternalState;
-    render(): void;
+    dispatch: (...args: any[]) => boolean;
+    render(): any; //React
   }
 
   export class Context<Props, State, TemplateProps> {
+    static component: typeof Component;
+    static subscribers: Function[];
+
+    // Immutable object given by pushContext
     props: Props;
+
+    // Mutable object update by initState and context.update
     state: State;
 
-    static rootComponent: typeof Component;
-    static subscribers: Function[];
     _component: Component<TemplateProps, any>;
     getActiveComponent(): any;
     initState(p: Props): State | Thenable<State>;
     expandTemplate(p: Props, s: State): TemplateProps | Thenable<TemplateProps>;
-    update(updater?: (s: State)=> State | void): Thenable<any>;
+    update(updater?: (s: State) => State | void): Thenable<any>;
+    delegate(
+      fn: (
+        subscribe:
+          ((eventName: string, fn?: (...args: any[]) => any) => any)
+      ) => void
+    )
   }
 
-  export function subscriber<A, B>(
+  export function subscriber<Props, State>
+  (
     fn: (
-      context: Context<A, B, any>,
-      subscribe: (
-        name: string,
-        fn: (...args: any[]) => void) => void
+      context: Context<Props, State, any>,
+      subscribe:
+        ((eventName: string, fn?: (...args: any[]) => any) => any)
     ) => void
-  ): (
+  ):
+  (
     fn: (
-      context: Context<A, B, any>,
-      subscribe: (
-        name: string,
-        fn: (...args: any[]) => void) => void
+      context: Context<Props, State, any>,
+      subscribe:
+        ((eventName: string, fn?: (...args: any[]) => any) => any)
     ) => void
   ) => void
 }
