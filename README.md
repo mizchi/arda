@@ -10,13 +10,11 @@ $ npm install arda --save
 
 ## Features
 
-- Context(one flux) can stack by router
+- History management by context(flux) stack
 - Transition with Promise
-- Protect mutable state by types(typescript) and make it atomic.
-
+- Loose coupling and testable
 - TypeScript, CoffeeScript, and ES6 friendly
-- Headless(by node) testing friendly
-- Loose coupling and testable by each module
+- Protect mutable state by types(typescript) and make it atomic.
 
 ## Dependencies
 
@@ -26,7 +24,7 @@ $ npm install arda --save
 
 ## Intro
 
-- `initState` -> `expandTemplate` -> `render` -> UserInput -> `dispatch` -> `update` -> `expandTempalte` -> `...`
+Store(`initState`, `expandTemplate`) -> View(`render` -> UserInput) -> Dispatcher(`dispatch`) -> Store(`update` -> `expandTempalte`) -> `...` 
 
 ```coffee
 window.React   = require 'react'
