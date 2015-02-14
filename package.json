@@ -4,6 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
+    "build": "coffee -o lib -c src/*",
     "test": "./node_modules/.bin/mocha --require espower-coffee/guess test/*.coffee -t 100"
   },
   "author": "",

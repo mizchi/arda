@@ -1,38 +1,66 @@
+// Arda, also known as the Earth, was the world in which Elves, Men, Dwarves, and Hobbits live.
+// ref. http://lotr.wikia.com/wiki/Arda
 declare module Arda {
-  // Agnostic Promise
-  export interface Thenable<R> {
-    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => U): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => void): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => U): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<any>;
-    then<U>(onFulfilled?: (value: any) => any, onRejected?: (error: any) => void): Thenable<any>;
-    // TODO: fix this optional later
-    catch?<U>(onRejected?: (error: any) => U): Thenable<U>;
-    catch?<U>(onRejected?: (error: any) => void): Thenable<U>;
-    catch?(onRejected?: (error: any) => void): Thenable<any>;
-  }
-
   export class Router {
-    constructor(layout: Component<any, any>, el: HTMLElement);
-    pushState(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
-    pushStateAndWaitForBack(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
-    replaceState(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
-    popState(): Thenable<Context<any, any, any>>;
+    // mount on element with layout component
+    // example.
+    //    new Arda.Router(Arda.DefaultLayout, document.body);
+    constructor(layout: typeof Component, el: HTMLElement);
+
+    // history push with promise
+    // example.
+    //    var router = new Arda.Router(Arda.DefaultLayout, document.body);
+    pushContext(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
+
+    // history push and wait next context's finish
+    pushContextAndWaitForBack(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
+
+    // historay replace with promise
+    replaceContext(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
+
+    // historay pop with promise
+    popContext(): Thenable<Context<any, any, any>>;
   }
 
+  // Arda.Component extends React.Component
   export class Component<TemplateProps, InternalState> {
+    refs: any;
     props: TemplateProps;
     state: InternalState;
-    dispatch: (...args: any[]) => boolean;
-    render(): any; //React
+    dispatch: (eventName: string, ...args: any[]) => boolean;
   }
 
+  // Arda.Component extends React.Component
+  export class DefaultLayout<TemplateProps> extends Component<{}, {
+    // Top context on history
+    activeContext: Context<any, any, TemplateProps>;
+    // last template props
+    templateProps: TemplateProps;
+  }> {}
+
   export class Context<Props, State, TemplateProps> {
+    // root component of this context
     static component: typeof Component;
-    static subscribers: Function[];
+
+    // static subscribers are automatically delegated at instantiate
+    // example
+    //     class MyContext extends Context
+    //        static subscribers: [
+    //          require('./lifecycle-subscriber'),
+    //          (context: MyContext, subscribe) => {
+    //            subscribe('my:update', () => console.log('updated'))
+    //          }
+    static subscribers: ((
+      self: any,
+      subscribe: (eventName: string, ...args: any[]) => any
+    ) => any)[];
+
+    delegate(
+      fn: (
+        subscribe:
+          ((eventName: string, fn?: (...args: any[]) => any) => any)
+      ) => void
+    )
 
     // Immutable object given by pushContext
     props: Props;
@@ -40,19 +68,13 @@ declare module Arda {
     // Mutable object update by initState and context.update
     state: State;
 
-    _component: Component<TemplateProps, any>;
-    getActiveComponent(): any;
+    getActiveComponent(): Component<TemplateProps, any>;
     initState(p: Props): State | Thenable<State>;
     expandTemplate(p: Props, s: State): TemplateProps | Thenable<TemplateProps>;
-    update(updater?: (s: State) => State | void): Thenable<any>;
-    delegate(
-      fn: (
-        subscribe:
-          ((eventName: string, fn?: (...args: any[]) => any) => any)
-      ) => void
-    )
+    update(updater?: (s: State) => (State | void)): Thenable<any>;
   }
 
+  // Type checking helper for typescript
   export function subscriber<Props, State>
   (
     fn: (
@@ -68,4 +90,21 @@ declare module Arda {
         ((eventName: string, fn?: (...args: any[]) => any) => any)
     ) => void
   ) => void
+
+  // Agnostic local Promise
+  export interface Thenable<R> {
+    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
+    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => U): Thenable<U>;
+    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => void): Thenable<U>;
+    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
+    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => U): Thenable<U>;
+    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<U>;
+    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<any>;
+    then<U>(onFulfilled?: (value: any) => any, onRejected?: (error: any) => void): Thenable<any>;
+    // TODO: fix this optional later
+    catch?<U>(onRejected?: (error: any) => U): Thenable<U>;
+    catch?<U>(onRejected?: (error: any) => void): Thenable<U>;
+    catch?(onRejected?: (error: any) => void): Thenable<any>;
+  }
+
 }
