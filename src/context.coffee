@@ -58,7 +58,7 @@ class Context extends EventEmitter
   initState: (props) -> props
 
   # Override
-  # Props, State -> Promise<TemplateProps>
+  # Props, State -> Promise<ComponentProps>
   expandTemplate: (props, state) -> props
 
   # Override

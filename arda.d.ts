@@ -27,22 +27,22 @@ declare module Arda {
   };
 
   // Arda.Component extends React.Component
-  export class Component<TemplateProps, InternalState> {
+  export class Component<ComponentProps, InternalState> {
     refs: any;
-    props: TemplateProps;
+    props: ComponentProps;
     state: InternalState;
     dispatch: (eventName: string, ...args: any[]) => boolean;
   }
 
   // Arda.Component extends React.Component
-  export class DefaultLayout<TemplateProps> extends Component<{}, {
+  export class DefaultLayout<ComponentProps> extends Component<{}, {
     // Top context on history
-    activeContext: Context<any, any, TemplateProps>;
+    activeContext: Context<any, any, ComponentProps>;
     // last template props
-    templateProps: TemplateProps;
+    templateProps: ComponentProps;
   }> {}
 
-  export class Context<Props, State, TemplateProps> {
+  export class Context<Props, State, ComponentProps> {
     // root component of this context
     static component: typeof Component;
 
@@ -72,9 +72,9 @@ declare module Arda {
     // Mutable object update by initState and context.update
     state: State;
 
-    getActiveComponent(): Component<TemplateProps, any>;
+    getActiveComponent(): Component<ComponentProps, any>;
     initState(p: Props): State | Thenable<State>;
-    expandTemplate(p: Props, s: State): TemplateProps | Thenable<TemplateProps>;
+    expandTemplate(p: Props, s: State): ComponentProps | Thenable<ComponentProps>;
     update(updater?: (s: State) => (State | void)): Thenable<any>;
   }
 

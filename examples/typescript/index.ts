@@ -8,9 +8,9 @@ global.Arda = require('../../lib');
 
 interface Props {firstName: string; lastName: string;}
 interface State {age: number;}
-interface TemplateProps {greeting: string;}
+interface ComponentProps {greeting: string;}
 
-class MyContext extends Arda.Context<Props, State, TemplateProps> {
+class MyContext extends Arda.Context<Props, State, ComponentProps> {
   static component = React.createClass({
     mixins: [Arda.mixin],
     render: function(){return React.createElement('h1', {}, this.props.greeting);}
@@ -23,7 +23,7 @@ class MyContext extends Arda.Context<Props, State, TemplateProps> {
     })
   }
   expandTemplate(props, state) {
-    // Can use promise  (TemplateProps | Promise<TemplateProps>)
+    // Can use promise  (ComponentProps | Promise<ComponentProps>)
     return {greeting: 'Hello, '+props.firstName+', '+state.age+' years old'}
   }
 }
