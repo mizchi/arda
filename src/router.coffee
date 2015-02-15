@@ -164,4 +164,4 @@ class Router extends EventEmitter
 
   _initContextWithExpanding: (context, props) ->
     context._initByProps(props)
-    .then => context.expandTemplate(context.props, context.state)
+    .then => context.expandComponentProps(context.props, context.state)

@@ -30,7 +30,7 @@ describe "src/context", ->
         initState: (props) ->
           initStateSpy()
           {a: 1}
-        expandTemplate: (props, state) ->
+        expandComponentProps: (props, state) ->
           updateSpy(state.a)
           state
 

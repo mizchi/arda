@@ -22,7 +22,7 @@ class MyContext extends Arda.Context<Props, State, ComponentProps> {
       setTimeout(done({age:10}), 1000)
     })
   }
-  expandTemplate(props, state) {
+  expandComponentProps(props, state) {
     // Can use promise  (ComponentProps | Promise<ComponentProps>)
     return {greeting: 'Hello, '+props.firstName+', '+state.age+' years old'}
   }

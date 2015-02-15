@@ -74,7 +74,7 @@ declare module Arda {
 
     getActiveComponent(): Component<ComponentProps, any>;
     initState(p: Props): State | Thenable<State>;
-    expandTemplate(p: Props, s: State): ComponentProps | Thenable<ComponentProps>;
+    expandComponentProps(p: Props, s: State): ComponentProps | Thenable<ComponentProps>;
     update(updater?: (s: State) => (State | void)): Thenable<any>;
   }
 

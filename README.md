@@ -24,7 +24,7 @@ $ npm install arda --save
 
 ## Intro
 
-Store(`initState`, `expandTemplate`) -> View(`render` -> UserInput) -> Dispatcher(`dispatch`) -> Store(`update` -> `expandTempalte`) -> `...` 
+Store(`initState`, `expandComponentProps`) -> View(`render` -> UserInput) -> Dispatcher(`dispatch`) -> Store(`update` -> `expandTempalte`) -> `...` 
 
 ```coffee
 window.React   = require 'react'
@@ -39,7 +39,7 @@ class Clicker extends Arda.Component
 class ClickerContext extends Arda.Context
   @component: Clicker
   initState: (props) -> cnt: 0
-  expandTemplate: (props, state) -> cnt: state.cnt
+  expandComponentProps: (props, state) -> cnt: state.cnt
   delegate: (subscribe) ->
     super
     # subscribe lifecycle event
@@ -106,7 +106,7 @@ class MyContext extends Arda.Context<Props, State, ComponentProps> {
       setTimeout(done({age:10}), 1000)
     })
   }
-  expandTemplate(props, state) {
+  expandComponentProps(props, state) {
     // Can use promise  (ComponentProps | Promise<ComponentProps>)
     return {greeting: 'Hello, '+props.firstName+', '+state.age+' years old'}
   }

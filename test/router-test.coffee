@@ -41,21 +41,21 @@ describe "src/router", ->
       .then ->
         assert $$(router.innerHTML)('.name').text() is 'my name is john doe'
 
-    it "will render template with initState and expandTemplate", ->
+    it "will render template with initState and expandComponentProps", ->
       class TestContext extends Arda.Context
         initState: (props) -> name: props.name + ' foo'
-        expandTemplate: (props, state) -> name: state.name + ' bar'
+        expandComponentProps: (props, state) -> name: state.name + ' bar'
         @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
       router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john'}).then ->
         assert $$(router.innerHTML)('.name').text() is 'my name is john foo bar'
 
-    it "will render template with initState and expandTemplate with Promise", ->
+    it "will render template with initState and expandComponentProps with Promise", ->
       class TestContext extends Arda.Context
         initState: (props) -> new Promise (done) ->
           done name: props.name + ' foo'
-        expandTemplate: (props, state) -> new Promise (done) ->
+        expandComponentProps: (props, state) -> new Promise (done) ->
           done name: state.name + ' bar'
         @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
@@ -144,7 +144,7 @@ describe "src/router", ->
   describe '#isLocked', ->
     it "return true if on pushContext or popContext", ->
       class TestContext extends Arda.Context
-        expandTemplate: (props, state) -> new Promise (_done) ->
+        expandComponentProps: (props, state) -> new Promise (_done) ->
           setTimeout -> _done {}
 
         dispose: -> new Promise (_done) =>
@@ -186,7 +186,7 @@ describe "src/router", ->
     it 'update' , ->
       class Context1 extends Arda.Context
         initState: (props) -> props
-        expandTemplate: (props, state) -> state
+        expandComponentProps: (props, state) -> state
         @component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'content'}, @props.name
 

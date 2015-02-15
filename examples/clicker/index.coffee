@@ -13,7 +13,7 @@ class ClickerContext extends Arda.Context
   @component: Clicker
 
   initState: -> cnt: 0
-  expandTemplate: ->
+  expandComponentProps: ->
     cnt: @state.cnt
 
   delegate: (subscribe) ->

@@ -47,7 +47,7 @@ class Context extends EventEmitter
       if nextState?
         @state = nextState
 
-      @expandTemplate(@props, @state)
+      @expandComponentProps(@props, @state)
     .then (templateProps) =>
       @_component.setState
         activeContext: @
@@ -59,7 +59,7 @@ class Context extends EventEmitter
 
   # Override
   # Props, State -> Promise<ComponentProps>
-  expandTemplate: (props, state) -> props
+  expandComponentProps: (props, state) -> props
 
   # Override
   # Register
