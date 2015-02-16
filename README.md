@@ -20,11 +20,10 @@ $ npm install arda --save
 
 - React
 - Promise (I reccomend `bluebird`)
-- RxJS (Optional)
 
 ## Intro
 
-Store(`initState`, `expandComponentProps`) -> View(`render` -> UserInput) -> Dispatcher(`dispatch`) -> Store(`update` -> `expandTempalte`) -> `...` 
+Store(`initState`, `expandComponentProps`) -> View(`render` -> UserInput) -> Dispatcher(`dispatch`) -> Store(`update` -> `expandTempalte`) -> `...`
 
 ```coffee
 window.React   = require 'react'
@@ -56,19 +55,9 @@ window.addEventListener 'DOMContentLoaded', ->
   router.pushContext(ClickerContext, {})
 ```
 
-If you want to use with rx, make event Rx.Observable
-
-```coffee
-window.Rx = require 'rx'
-# ...
-  delegate: (subscribe) ->
-    super
-    # Rx.Observable
-    @clicks = subscribe 'clicker:++'
-    @clicks.subscribe => @update(({cnt}) => cnt: cnt+1)
-```
-
 Context instance is just EventEmitter.
+
+![](http://i.gyazo.com/ff7ddb2643ea4d1587f1ce236da0f918.png)
 
 ## Transition
 
@@ -85,7 +74,25 @@ router.pushContext(MainContext, {})             # Main
 .then => console.log router.history
 ```
 
-`pushContext` and `repalceContext`'s second argument is to be context.props as immutable object.
+`pushContext` and `replsceContext`'s second argument is to be context.props as immutable object.
+
+## LifeCycle
+
+```coffee
+subscriber = (context, subscribe) ->
+  subscribe 'context:created', -> console.log 'created'
+  subscribe 'context:started', -> console.log 'started'
+  subscribe 'context:paused', -> console.log 'paused'
+  subscribe 'context:resumed', -> console.log 'resumed'
+  subscribe 'context:disposed', -> console.log 'disposed'
+
+class MyContext extends Arda.Context
+  @component: MyComponent
+  subscribers: [subscriber]
+```
+
+
+![](http://i.gyazo.com/7b2dffed4f296beddc8a305270db884a.png)
 
 ## with TypeScript
 
