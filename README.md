@@ -19,7 +19,7 @@ $ npm install arda --save
 ## Dependencies
 
 - React
-- Promise (I reccomend `bluebird`)
+- Promise (I recommend `bluebird`)
 
 ## Intro
 
