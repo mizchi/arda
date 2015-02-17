@@ -57,7 +57,7 @@ window.addEventListener 'DOMContentLoaded', ->
 
 Context instance is just EventEmitter.
 
-![](http://i.gyazo.com/ff7ddb2643ea4d1587f1ce236da0f918.png)
+![](http://i.gyazo.com/7b2dffed4f296beddc8a305270db884a.png)
 
 ## Transition
 
@@ -92,7 +92,7 @@ class MyContext extends Arda.Context
 ```
 
 
-![](http://i.gyazo.com/7b2dffed4f296beddc8a305270db884a.png)
+![](http://i.gyazo.com/ff7ddb2643ea4d1587f1ce236da0f918.png)
 
 ## with TypeScript
 
@@ -134,7 +134,7 @@ See [typescript example](examples/typescript/index.ts)
 
 ## API
 
-See [arda.d.ts](arda.d.ts)
+See detail at [arda.d.ts](arda.d.ts)
 
 ## LICENSE
 
