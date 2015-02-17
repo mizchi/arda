@@ -4,6 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
+    "prepublish": "$(npm bin)/coffee -o lib -c src/*",
     "build": "$(npm bin)/coffee -o lib -c src/*",
     "test": "$(npm bin)/mocha --require espower-coffee/guess test/*.coffee -t 100"
   },
