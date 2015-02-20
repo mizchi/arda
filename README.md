@@ -8,22 +8,31 @@ Meta-Flux framework for real world.
 $ npm install arda --save
 ```
 
-## Features
+## Concept
 
-- History management by context(flux) stack
+Today's Flux is weak at scene transitions. Arda make it simple by `router` and `context`(chunk of flux).
+
+Context has Flux features and its stack is very simple.
+
+- Dispatcher is just EventEmitter
+- View is just React.Component (with mixin)
+- Store should be covered by typesafe steps with promise
+
+I need to develop to make my company's react project simple. Arda is started from extraction of my works and well dogfooded. Thx [Increments Inc.](https://github.com/increments "Increments Inc.")
+
+
+## Goals
+
 - Transition with Promise
 - Loose coupling and testable
-- TypeScript, CoffeeScript, and ES6 friendly
-- Protect mutable state by types(typescript) and make it atomic.
-
-## Dependencies
-
-- React
-- Promise (I recommend `bluebird`)
+- *TypeScript*, *CoffeeScript*, and *ES6* friendly
+- Protect mutable state and make it atomic.
 
 ## Intro
 
-Store(`initState`, `expandComponentProps`) -> View(`render` -> UserInput) -> Dispatcher(`dispatch`) -> Store(`update` -> `expandTempalte`) -> `...`
+Context, it extends way of react, is just one flux loop and has data flow, `Props => State => ComponentProps`
+
+simple example by coffeescript is below.
 
 ```coffee
 window.React   = require 'react'
@@ -41,10 +50,10 @@ class ClickerContext extends Arda.Context
   expandComponentProps: (props, state) -> cnt: state.cnt
   delegate: (subscribe) ->
     super
-    # subscribe lifecycle event
+    # subscribe lifecycle event. See detail later of this README
     subscribe 'context:created', -> console.log 'created'
 
-    # subscribe ui event
+    # subscribe ui events
     subscribe 'clicker:++', =>
       # state is changed by only context.update(...)
       @update((s) => cnt: s.cnt+1)
@@ -54,8 +63,6 @@ window.addEventListener 'DOMContentLoaded', ->
   router = new Arda.Router(Arda.DefaultLayout, document.body)
   router.pushContext(ClickerContext, {})
 ```
-
-Context instance is just EventEmitter.
 
 ![](http://i.gyazo.com/7b2dffed4f296beddc8a305270db884a.png)
 
@@ -70,7 +77,6 @@ router.pushContext(MainContext, {})             # Main
 .then => router.pushContext(MainContext, {})    # Main, Sub, Main
 .then => router.popContext()                    # Main, Sub
 .then => router.replaceContext(MainContext, {}) # Main, Main
-.then => router.replaceContext(SubContext, {})  # Main, Sub
 .then => console.log router.history
 ```
 
@@ -91,10 +97,13 @@ class MyContext extends Arda.Context
   subscribers: [subscriber]
 ```
 
-
 ![](http://i.gyazo.com/ff7ddb2643ea4d1587f1ce236da0f918.png)
 
+static `subscribers` is automatic delegator on instantiate.
+
 ## with TypeScript
+
+To achive purpose to make mutable state typesafe, Arda with TypeScript is better than other AltJS.
 
 ```javascript
 interface Props {firstName: string; lastName: string;}
@@ -130,7 +139,14 @@ router.pushContext(MyContext, {firstName: 'Jonh', lastName: 'Doe'})
 });
 ```
 
-See [typescript example](examples/typescript/index.ts)
+See [typescript working example](examples/typescript/index.ts)
+
+Or see mizchi's starter project[mizchi-sandbox/arda-starter-project](https://github.com/mizchi-sandbox/arda-starter-project "mizchi-sandbox/arda-starter-project")
+
+## Dependencies
+
+- React v0.13.0-beta.* >
+- Promise (I recommend `bluebird`)
 
 ## API
 
