@@ -39,7 +39,7 @@ window.React   = require 'react'
 window.Promise = require 'bluebird'
 Arda = require 'arda'
 
-# extends React.Component or mixin `Arda.mixin` in React.createClass
+# extends Arda.Component or mixin `Arda.mixin` in React.createClass
 class Clicker extends Arda.Component
   render: -> React.createElement 'button', {onClick: @onClick.bind(@)}, @props.cnt
   onClick: -> @dispatch 'clicker:++'
