@@ -1,6 +1,6 @@
 {
   "name": "arda",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
