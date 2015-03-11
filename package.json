@@ -20,8 +20,7 @@
     "jsdom": "^3.1.0",
     "mocha": "^2.1.0",
     "power-assert": "^0.10.1",
-    "react": "0.13.0-beta.2",
-    "rx": "^2.3.25",
+    "react": "0.13.0",
     "sinon": "^1.12.2",
     "source-map-support": "^0.2.9"
   }
