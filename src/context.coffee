@@ -8,6 +8,7 @@ class Context extends EventEmitter
   # static contextType: Object
   # props: Props
   # state: State
+  # lifecycle: string;
   # _component: Component
   ######################
 
@@ -15,6 +16,7 @@ class Context extends EventEmitter
     super
     subscribers = @constructor.subscribers ? []
     @_onDisposes = []
+    @lifecycle = null
 
     @delegate (eventName, callback) =>
       if callback?

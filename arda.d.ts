@@ -38,6 +38,7 @@ declare module Arda {
   export class DefaultLayout<ComponentProps> extends Component<{}, {
     // Top context on history
     activeContext: Context<any, any, ComponentProps>;
+
     // last template props
     templateProps: ComponentProps;
   }> {}
@@ -45,6 +46,9 @@ declare module Arda {
   export class Context<Props, State, ComponentProps> {
     // root component of this context
     static component: typeof Component;
+
+    // active / pause / disposed
+    lifecycle: string;
 
     // static subscribers are automatically delegated at instantiate
     // example

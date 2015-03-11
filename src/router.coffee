@@ -36,7 +36,8 @@ class Router extends EventEmitter
 
   pushContextAndWaitForBack: (contextClass, initialProps = {}) ->
     new Promise (done) =>
-      @pushContext(contextClass, initialProps).then (context) =>
+      @pushContext(contextClass, initialProps)
+      .then (context) =>
         context.on 'context:disposed', done
 
   # typeof Context => Thenable<Boolean>
@@ -46,6 +47,7 @@ class Router extends EventEmitter
     # check
     if lastContext = @activeContext
       lastContext.emit 'context:paused'
+      lastContext.lifecycle = 'paused'
 
     @activeContext = new contextClass @_rootComponent, initialProps
     @_mountToParent(@activeContext, initialProps)
@@ -57,6 +59,7 @@ class Router extends EventEmitter
       @_unlock()
       @activeContext.emit 'context:created'
       @activeContext.emit 'context:started'
+      @activeContext.lifecycle = 'active'
       @emit 'router:pushed', @activeContext
     .then =>
       @activeContext
@@ -84,6 +87,7 @@ class Router extends EventEmitter
       if @activeContext
         @activeContext.emit 'context:started'
         @activeContext.emit 'context:resumed'
+        @activeContext.lifecycle = 'active'
         @emit 'router:popped', @activeContext
       else
         @emit 'router:blank'
@@ -105,6 +109,7 @@ class Router extends EventEmitter
       @activeContext = new contextClass @_rootComponent, initialProps
       @activeContext.emit 'context:created'
       @activeContext.emit 'context:started'
+      @activeContext.lifecycle = 'active'
       @_mountToParent(@activeContext, initialProps)
     .then =>
       @history.pop()
@@ -157,6 +162,7 @@ class Router extends EventEmitter
     delete context.props
     delete context.state
     context.emit 'context:disposed'
+    context.lifecycle = 'disposed'
     context.removeAllListeners?()
     context.dispose()
     context.disposed = true
