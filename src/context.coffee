@@ -51,6 +51,9 @@ class Context extends EventEmitter
 
       @expandComponentProps(@props, @state)
     .then (templateProps) =>
+      # Stop if
+      if @lifecycle in ['pause', 'disposed']
+        Promise.reject new Error('Context is not active but tried to update')
       @_component.setState
         activeContext: @
         templateProps: templateProps
