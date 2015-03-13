@@ -17,6 +17,7 @@ class Context extends EventEmitter
     subscribers = @constructor.subscribers ? []
     @_onDisposes = []
     @lifecycle = null
+    @state = null
 
     @delegate (eventName, callback) =>
       if callback?
