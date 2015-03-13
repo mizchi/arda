@@ -80,7 +80,7 @@ class Router extends EventEmitter
     .then =>
       @activeContext = @history[@history.length-1]?.context
       if @activeContext?
-        @_mountToParent(@activeContext, @activeContext.props)
+        @_mountToParent(@activeContext, @activeContext.props, true)
       else
         @_unmountAll()
     .then =>
@@ -124,8 +124,8 @@ class Router extends EventEmitter
       @activeContext
 
   #  Context * Object  => Thenable<void>
-  _mountToParent: (context, initialProps) ->
-    @_initContextWithExpanding(context, initialProps)
+  _mountToParent: (context, initialProps, reuseState = false) ->
+    @_initContextWithExpanding(context, initialProps, reuseState)
     .then (templateProps) =>
       @_outputByEnv(context, templateProps)
 
@@ -168,6 +168,9 @@ class Router extends EventEmitter
     context.disposed = true
     Object.freeze(context)
 
-  _initContextWithExpanding: (context, props) ->
-    context._initByProps(props)
-    .then => context.expandComponentProps(context.props, context.state)
+  _initContextWithExpanding: (context, props, reuseState = false) ->
+    if context.state? and reuseState
+      context.expandComponentProps(context.props, context.state)
+    else
+      context._initByProps(props)
+      .then => context.expandComponentProps(context.props, context.state)
