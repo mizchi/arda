@@ -51,10 +51,12 @@ describe "src/context", ->
   describe '#render', ->
     it "should render child context", ->
       class ChildContext extends Arda.Context
-        component: class Child extends Arda.Component
+        component: React.createClass
+          mixins: [React.mixin]
           render: -> React.createElement 'h1', {}, 'Child'
 
-      class Parent extends Arda.Component
+      Parent = React.createClass
+        mixins: [React.mixin]
         render: ->
           child = new ChildContext
           React.createElement 'div', {}, [
@@ -67,10 +69,12 @@ describe "src/context", ->
 
     it "should update render on child", ->
       class ChildContext extends Arda.Context
-        component: class Child extends Arda.Component
+        component: React.createClass
+          mixins: [React.mixin]
           render: -> React.createElement 'h1', {}, 'Child'
 
-      class Parent extends Arda.Component
+      Parent = React.createClass
+        mixins: [React.mixin]
         render: ->
           child = new ChildContext
           React.createElement 'div', {}, [

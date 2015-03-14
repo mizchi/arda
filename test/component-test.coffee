@@ -1,11 +1,11 @@
 require './spec_helper'
-Component = require '../src/component'
 Arda = require '../src'
 
 describe "src/component", ->
   describe '#dispatch', ->
     it 'use shared context emitter', (done) ->
-      class HelloComponent extends Arda.Component
+      HelloComponent = React.createClass
+        mixins: [Arda.mixin]
         componentDidMount: ->
           @dispatch 'foo'
 
@@ -30,7 +30,8 @@ describe "src/component", ->
     context 'without Rx', ->
       beforeEach  -> delete global.Rx
       it '`subscribe` throw with 1 argument', (done) ->
-        class HelloComponent extends Arda.Component
+        HelloComponent = React.createClass
+          mixins: [Arda.mixin]
           componentDidMount: -> @dispatch 'foo'
           render: -> React.createElement 'div'
 
@@ -50,7 +51,8 @@ describe "src/component", ->
 
   describe '#createChildRouter', ->
     it 'create router', (done)->
-      class TestComponent extends Component
+      TestComponent = React.createClass
+        mixins: [Arda.mixin]
         componentDidMount: ->
           subRouter = @createChildRouter @refs.container.getDOMNode()
           assert subRouter instanceof Arda.Router
@@ -67,13 +69,15 @@ describe "src/component", ->
   describe '#createContextOnNode', ->
     it 'create context', (done) ->
       class Context extends Arda.Context
-        component: class Component extends Arda.Component
+        component: React.createClass
+          mixins: [Arda.mixin]
           componentDidMount: ->
             done()
           render: ->
             React.createElement 'div'
 
-      class TestComponent extends Component
+      TestComponent = React.createClass
+        mixins: [Arda.mixin]
         componentDidMount: ->
           @createContextOnNode(@refs.container.getDOMNode(), Context, {})
 
