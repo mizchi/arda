@@ -8,7 +8,7 @@
     "build": "$(npm bin)/coffee -o lib -c src/*",
     "test": "$(npm bin)/mocha --require espower-coffee/guess test/*.coffee -t 100"
   },
-  "author": "",
+  "author": "mizchi",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
@@ -23,5 +23,21 @@
     "react": "0.13.0",
     "sinon": "^1.12.2",
     "source-map-support": "^0.2.9"
-  }
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mizchi/arda.git"
+  },
+  "keywords": [
+    "flux",
+    "react"
+  ],
+  "bugs": {
+    "url": "https://github.com/mizchi/arda/issues"
+  },
+  "homepage": "https://github.com/mizchi/arda"
 }
