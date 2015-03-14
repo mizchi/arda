@@ -170,7 +170,9 @@ class Router extends EventEmitter
 
   _initContextWithExpanding: (context, props, reuseState = false) ->
     if context.state? and reuseState
-      context.expandComponentProps(context.props, context.state)
+      Promise.resolve(
+        context.expandComponentProps(context.props, context.state)
+      )
     else
       context._initByProps(props)
       .then => context.expandComponentProps(context.props, context.state)
