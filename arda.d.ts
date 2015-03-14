@@ -10,16 +10,16 @@ declare module Arda {
     // history push with promise
     // example.
     //    var router = new Arda.Router(Arda.DefaultLayout, document.body);
-    pushContext(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
+    pushContext(context: typeof Context, args?: any): Promise<Context<any, any, any>>;
 
     // history push and wait next context's finish
-    pushContextAndWaitForBack(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
+    pushContextAndWaitForBack(context: typeof Context, args?: any): Promise<Context<any, any, any>>;
 
     // historay replace with promise
-    replaceContext(context: typeof Context, args?: any): Thenable<Context<any, any, any>>;
+    replaceContext(context: typeof Context, args?: any): Promise<Context<any, any, any>>;
 
     // historay pop with promise
-    popContext(): Thenable<Context<any, any, any>>;
+    popContext(): Promise<Context<any, any, any>>;
   }
 
   export var mixin: {
@@ -45,7 +45,7 @@ declare module Arda {
 
   export class Context<Props, State, ComponentProps> {
     // root component of this context
-    static component: typeof Component;
+    component: typeof Component;
 
     // active / pause / disposed
     lifecycle: string;
@@ -58,7 +58,7 @@ declare module Arda {
     //          (context: MyContext, subscribe) => {
     //            subscribe('my:update', () => console.log('updated'))
     //          }
-    static subscribers: ((
+    subscribers: ((
       self: any,
       subscribe: (eventName: string, ...args: any[]) => any
     ) => any)[];
@@ -77,9 +77,9 @@ declare module Arda {
     state: State;
 
     getActiveComponent(): Component<ComponentProps, any>;
-    initState(p: Props): State | Thenable<State>;
-    expandComponentProps(p: Props, s: State): ComponentProps | Thenable<ComponentProps>;
-    update(updater?: (s: State) => (State | void)): Thenable<any>;
+    initState(p: Props): State | Promise<State>;
+    expandComponentProps(p: Props, s: State): ComponentProps | Promise<ComponentProps>;
+    update(updater?: (s: State) => (State | void)): Promise<any>;
   }
 
   // Type checking helper for typescript
@@ -98,21 +98,4 @@ declare module Arda {
         ((eventName: string, fn?: (...args: any[]) => any) => any)
     ) => void
   ) => void
-
-  // Agnostic local Promise
-  export interface Thenable<R> {
-    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => U): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => Thenable<U>, onRejected?: (error: any) => void): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => Thenable<U>): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => U): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<U>;
-    then<U>(onFulfilled?: (value: R) => U, onRejected?: (error: any) => void): Thenable<any>;
-    then<U>(onFulfilled?: (value: any) => any, onRejected?: (error: any) => void): Thenable<any>;
-    // TODO: fix this optional later
-    catch?<U>(onRejected?: (error: any) => U): Thenable<U>;
-    catch?<U>(onRejected?: (error: any) => void): Thenable<U>;
-    catch?(onRejected?: (error: any) => void): Thenable<any>;
-  }
-
 }

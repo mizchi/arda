@@ -8,9 +8,6 @@
   "path": "typings",
   "bundle": "typings/bundle.d.ts",
   "dependencies": {
-    "es6-promise/es6-promise.d.ts": {
-      "ref": "7d298be1db15bbd1e17638b9c37423efc38fa602"
-    },
     "node/node.d.ts": {
       "ref": "7d298be1db15bbd1e17638b9c37423efc38fa602"
     }
