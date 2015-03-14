@@ -1,17 +1,19 @@
 T = React.PropTypes
+
 module.exports = React.createClass
   childContextTypes:
-    shared: T.object
+    ctx: T.object
 
   contextTypes:
     ctx: T.object
 
   getChildContext: ->
-    # shared: @state.activeContext
-    shared: @getContext()
+    ctx: @getCtx()
 
-  getContext: -> this.state.activeContext or @context.shared
-    # return this.props.shared or (@context and @context.shared)
+  getCtx: -> @props.ctx ? @context.ctx
+
+  dispatch: ->
+    @getCtx().emit arguments...
 
   getInitialState: ->
     activeContext: null
@@ -19,7 +21,9 @@ module.exports = React.createClass
 
   render: ->
     if @state.activeContext?
+      # dirty touch
       @state.templateProps.ref = 'root'
-      React.createFactory(@state.activeContext?.component)(@state.templateProps)
+      @state.templateProps.ctx = @state.activeContext
+      React.createElement @state.activeContext?.component, @state.templateProps
     else
       React.createElement 'div'

@@ -38,7 +38,7 @@ describe "src/context", ->
       context.props = {}
 
       assert !initStateSpy.called
-      context.update((state) => {a: state.a+1})
+      context.update (state) => {a: state.a+1}
       .then =>
         assert initStateSpy.calledOnce
         assert updateSpy.calledWith(2)
@@ -52,16 +52,16 @@ describe "src/context", ->
     it "should render child context", ->
       class ChildContext extends Arda.Context
         component: React.createClass
-          mixins: [React.mixin]
-          render: -> React.createElement 'h1', {}, 'Child'
+          mixins: [Arda.mixin]
+          render: -> React.createElement 'h1', {key: 'unique!!'}, 'Child'
 
       Parent = React.createClass
-        mixins: [React.mixin]
+        mixins: [Arda.mixin]
         render: ->
           child = new ChildContext
-          React.createElement 'div', {}, [
-            React.createElement 'h1', {}, 'Parent'
-            child.render({})
+          React.createElement 'div', {key: 'container'}, [
+            React.createElement 'h1', {key: 'h1'}, 'Parent'
+            child.render({key: 'child'})
           ]
       React.render React.createFactory(Parent)({}), document.body
       assert document.body.innerHTML.indexOf('Parent') > -1
@@ -70,16 +70,16 @@ describe "src/context", ->
     it "should update render on child", ->
       class ChildContext extends Arda.Context
         component: React.createClass
-          mixins: [React.mixin]
-          render: -> React.createElement 'h1', {}, 'Child'
+          mixins: [Arda.mixin]
+          render: -> React.createElement 'h1', {key: 'uniq1'}, 'Child'
 
       Parent = React.createClass
-        mixins: [React.mixin]
+        mixins: [Arda.mixin]
         render: ->
           child = new ChildContext
-          React.createElement 'div', {}, [
-            React.createElement 'h1', {}, 'Parent'
-            child.render({})
+          React.createElement 'div', {key: 'container'}, [
+            React.createElement 'h1', {key: 'h1'}, 'Parent'
+            child.render({key: 'child'})
           ]
       React.render React.createFactory(Parent)({}), document.body
       assert document.body.innerHTML.indexOf('Parent') > -1

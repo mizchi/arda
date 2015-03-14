@@ -1,9 +1,13 @@
+T = React.PropTypes
+
 module.exports =
   contextTypes:
-    shared: React.PropTypes.any
+    ctx: T.object
 
   dispatch: ->
-    @context.shared.emit arguments...
+    @getCtx().emit arguments...
+
+  getCtx: -> @props.ctx ? @context.ctx
 
   createChildRouter: (node) ->
     Router = require './router'
@@ -16,3 +20,6 @@ module.exports =
     childRouter = @createChildRouter(node)
     childRouter.pushContext(contextClass, props)
     .then (context) => Promise.resolve(context)
+
+  getContext: ->
+    @props.ctx or @context?.ctx

@@ -259,7 +259,7 @@ describe "src/router", ->
   #       mixins: [Arda.mixin]
   #       createChildRouter: (node) ->
   #         childRouter = new Arda.Router(Arda.DefaultLayout, node)
-  #         # @context.shared.on 'disposed', => childRouter.dispose?()
+  #         # @context.ctx.on 'disposed', => childRouter.dispose?()
   #         childRouter
   #
   #       createContextOnNode: (node, contextClass, props) ->

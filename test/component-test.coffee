@@ -3,16 +3,15 @@ Arda = require '../src'
 
 describe "src/component", ->
   describe '#dispatch', ->
-    it 'use shared context emitter', (done) ->
-      HelloComponent = React.createClass
-        mixins: [Arda.mixin]
-        componentDidMount: ->
-          @dispatch 'foo'
-
-        render: ->
-          React.createElement 'div'
-
+    it 'use ctx context emitter', (done) ->
       class HelloContext extends Arda.Context
+        component: React.createClass
+          mixins: [Arda.mixin]
+          componentDidMount: ->
+            @dispatch 'foo'
+
+          render: -> React.createElement 'div'
+
         subscribers: [
           (context, subscribe) ->
             assert context instanceof Arda.Context
@@ -20,10 +19,12 @@ describe "src/component", ->
               subscribe 'bar', =>
                 done()
         ]
-        component: HelloComponent
 
+      # done()
       router = new Arda.Router(Arda.DefaultLayout, document.body)
-      router.pushContext(HelloContext, {}).then (context) =>
+      router.pushContext(HelloContext, {})
+
+      .then (context) =>
         assert context instanceof Arda.Context
         context.emit 'bar'
 

@@ -1,7 +1,7 @@
 {
   "name": "arda",
-  "version": "0.11.0",
-  "description": "",
+  "version": "0.12.0",
+  "description": "meta-flux",
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "$(npm bin)/coffee -o lib -c src/*",
