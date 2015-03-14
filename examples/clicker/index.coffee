@@ -3,9 +3,9 @@ window.Promise = require 'bluebird'
 Arda = require '../../src/'
 
 Clicker = React.createClass
-  mixin: [Arda.mixin]
+  mixins: [Arda.mixin]
   render: ->
-    React.createElement 'button', {onClick: @onClick.bind(@)}, @props.cnt
+    React.createElement 'button', {onClick: @onClick}, @props.cnt
 
   onClick: ->
     @dispatch 'hello:++'

@@ -3,7 +3,7 @@ T = React.PropTypes
 module.exports =
   contextTypes:
     ctx: T.object
-
+    
   dispatch: ->
     @getCtx().emit arguments...
 
