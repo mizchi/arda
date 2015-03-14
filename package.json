@@ -17,7 +17,7 @@
     "coffee-script": "^1.9.0",
     "coffeeify": "^1.0.0",
     "espower-coffee": "^0.10.0",
-    "jsdom": "^3.1.0",
+    "jsdom": "^4.0.2",
     "mocha": "^2.1.0",
     "power-assert": "^0.10.1",
     "react": "0.13.0",
