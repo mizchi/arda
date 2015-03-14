@@ -145,7 +145,7 @@ Or see mizchi's starter project[mizchi-sandbox/arda-starter-project](https://git
 
 ## Dependencies
 
-- React v0.13.0-beta.* >
+- React v0.13.0 >=
 - Promise (I recommend `bluebird`)
 
 ## API
