@@ -2,7 +2,8 @@ window.React = require 'react'
 window.Promise = require 'bluebird'
 Arda = require '../../src/'
 
-class HelloComponent extends Arda.Component
+HelloComponent = React.createClass
+  mixin: [Arda.mixin]
   render: ->
     React.createElement 'h1', {}, 'Hello Arda'
 
