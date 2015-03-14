@@ -3,13 +3,13 @@ window.Promise = require 'bluebird'
 Arda = require '../../src/'
 
 class MainContext extends Arda.Context
-  @component:
+  component:
     class Main extends Arda.Component
       render: ->
         React.createElement 'h1', {}, 'Main'
 
 class SubContext extends Arda.Context
-  @component:
+  component:
     class Sub extends Arda.Component
       render: ->
         React.createElement 'h1', {}, 'Sub'

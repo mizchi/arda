@@ -14,7 +14,7 @@ class Context extends EventEmitter
 
   constructor: (@_component, @props) ->
     super
-    subscribers = @constructor.subscribers ? []
+    subscribers = @subscribers ? []
     @_onDisposes = []
     @lifecycle = null
     @state = null
@@ -33,7 +33,7 @@ class Context extends EventEmitter
   getActiveComponent: -> @_component.refs.root
 
   delegate: (subscribe) ->
-    subscribers = @constructor.subscribers ? []
+    subscribers = @subscribers ? []
     subscribers.forEach (subscriber) =>
       subscriber @, subscribe
 
@@ -70,7 +70,7 @@ class Context extends EventEmitter
   # Override
   # Register
   render: (templateProps = {}) ->
-    component = React.createFactory(@constructor.component)
+    component = React.createFactory(@component)
     component(templateProps)
 
   # Props => ()

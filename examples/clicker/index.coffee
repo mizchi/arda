@@ -10,7 +10,7 @@ class Clicker extends Arda.Component
     @dispatch 'hello:++'
 
 class ClickerContext extends Arda.Context
-  @component: Clicker
+  component: Clicker
 
   initState: -> cnt: 0
   expandComponentProps: ->

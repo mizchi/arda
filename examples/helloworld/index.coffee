@@ -7,7 +7,7 @@ class HelloComponent extends Arda.Component
     React.createElement 'h1', {}, 'Hello Arda'
 
 class HelloContext extends Arda.Context
-  @component: HelloComponent
+  component: HelloComponent
 
 window.addEventListener 'DOMContentLoaded', ->
   router = new Arda.Router(Arda.DefaultLayout, document.body)

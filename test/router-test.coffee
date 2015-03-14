@@ -6,14 +6,14 @@ describe "src/router", ->
     it "will mount target by pushContext", (done) ->
       router = new Arda.Router Arda.DefaultLayout, document.body
       class AutoEndContext extends Arda.Context
-        @component: class AutoEnd extends Arda.Component
+        component: class AutoEnd extends Arda.Component
           componentWillMount: ->
             # It cause back to here
             setTimeout => router.popContext()
           render: -> React.createElement 'div', {}, 'test'
 
       class TestContext extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, 'test'
       router.pushContext(TestContext, {})
       .then =>
@@ -25,7 +25,7 @@ describe "src/router", ->
   describe '#pushContext', ->
     it "will mount target by pushContext", (done) ->
       class TestContext extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           componentWillMount: -> done()
           render: -> React.createElement 'div', {}, 'test'
       router = new Arda.Router Arda.DefaultLayout, null
@@ -33,7 +33,7 @@ describe "src/router", ->
 
     it "will render template by default", ->
       class TestContext extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
 
       router = new Arda.Router Arda.DefaultLayout, null
@@ -45,7 +45,7 @@ describe "src/router", ->
       class TestContext extends Arda.Context
         initState: (props) -> name: props.name + ' foo'
         expandComponentProps: (props, state) -> name: state.name + ' bar'
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
       router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john'}).then ->
@@ -57,7 +57,7 @@ describe "src/router", ->
           done name: props.name + ' foo'
         expandComponentProps: (props, state) -> new Promise (done) ->
           done name: state.name + ' bar'
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}, 'my name is '+@props.name
 
       router = new Arda.Router Arda.DefaultLayout, null
@@ -75,7 +75,7 @@ describe "src/router", ->
 
     it "dispose last context", ->
       class Context extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}
       router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(Context, {})
@@ -89,7 +89,7 @@ describe "src/router", ->
   describe '#replaceContext', ->
     it "throws at blank", (done) ->
       class Context1 extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, 'context1'
       router = new Arda.Router Arda.DefaultLayout, null
       try
@@ -100,11 +100,11 @@ describe "src/router", ->
 
     it "replace active context", ->
       class Context1 extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, 'context1'
 
       class Context2 extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, 'context2'
 
       router = new Arda.Router Arda.DefaultLayout, null
@@ -117,16 +117,16 @@ describe "src/router", ->
 
     it "fire disposed", (done) ->
       class Context1 extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
 
       spy = sinon.spy()
       class Context2 extends Arda.Context
-        @subscribers: [
+        subscribers: [
           (context, subscribe) ->
             subscribe 'context:disposed' , -> spy 'disposed'
         ]
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
 
         # subscribe: (subscribe) ->
@@ -151,7 +151,7 @@ describe "src/router", ->
           super
           setTimeout -> _done {}
 
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'name'}
 
       router = new Arda.Router Arda.DefaultLayout, null
@@ -173,7 +173,7 @@ describe "src/router", ->
   context 'withDOM', ->
     it 'render', ->
       class Context1 extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'content'}, @props.name
       router = new Arda.Router Arda.DefaultLayout, document.body
       router.pushContext(Context1, {name: 1})
@@ -187,7 +187,7 @@ describe "src/router", ->
       class Context1 extends Arda.Context
         initState: (props) -> props
         expandComponentProps: (props, state) -> state
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {className: 'content'}, @props.name
 
       router = new Arda.Router Arda.DefaultLayout, document.body
@@ -200,9 +200,9 @@ describe "src/router", ->
     it "fires created | started | resumed | disposed", ->
       spy = sinon.spy()
       class Context1 extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
-        @subscribers: [
+        subscribers: [
           (component, subscribe) ->
             subscribe 'context:created', -> spy 'created'
             subscribe 'context:started', -> spy 'started'
@@ -210,7 +210,7 @@ describe "src/router", ->
             subscribe 'context:resumed' , -> spy 'resumed'
         ]
       class Context2 extends Arda.Context
-        @component: class Test extends Arda.Component
+        component: class Test extends Arda.Component
           render: -> React.createElement 'div', {}, ''
 
       router = new Arda.Router Arda.DefaultLayout, null
@@ -233,7 +233,7 @@ describe "src/router", ->
   describe 'blank', ->
     it 'create child context and dispose', (done) ->
       class SubContext extends Arda.Context
-        @component:
+        component:
           class SubComponent extends Arda.Component
             render: ->
               React.createElement 'h1', {}, 'Sub'
@@ -263,7 +263,7 @@ describe "src/router", ->
           ]
 
       class HelloContext extends Arda.Context
-        @component: HelloComponent
+        component: HelloComponent
 
       router = new Arda.Router(Arda.DefaultLayout, document.body)
       router.pushContext(HelloContext, {})

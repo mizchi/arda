@@ -149,7 +149,7 @@ class Router extends EventEmitter
   # For test dry run
   _outputToRouterInnerHTML: (activeContext, templateProps) ->
     if activeContext
-      rendered = React.createFactory(activeContext.constructor.component)(templateProps)
+      rendered = React.createFactory(activeContext.component)(templateProps)
       @innerHTML = React.renderToString rendered
     else
       @innerHTML = ''

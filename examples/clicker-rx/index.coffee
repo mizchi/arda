@@ -11,7 +11,7 @@ class Clicker extends Arda.Component
     @dispatch 'clicker:click'
 
 class ClickerContext extends Arda.Context
-  @component: Clicker
+  component: Clicker
   delegate: (subscribe) ->
     super
     subscribe 'context:created', -> console.log 'created'

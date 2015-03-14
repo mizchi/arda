@@ -13,14 +13,14 @@ describe "src/component", ->
           React.createElement 'div'
 
       class HelloContext extends Arda.Context
-        @subscribers: [
+        subscribers: [
           (context, subscribe) ->
             assert context instanceof Arda.Context
             subscribe 'foo', (prop) =>
               subscribe 'bar', =>
                 done()
         ]
-        @component: HelloComponent
+        component: HelloComponent
 
       router = new Arda.Router(Arda.DefaultLayout, document.body)
       router.pushContext(HelloContext, {}).then (context) =>
@@ -35,7 +35,7 @@ describe "src/component", ->
           render: -> React.createElement 'div'
 
         class HelloContext extends Arda.Context
-          @subscribers: [
+          subscribers: [
             (context, subscribe) ->
               try
                 fooStream = subscribe 'foo'
@@ -43,7 +43,7 @@ describe "src/component", ->
               catch e
                 done()
           ]
-          @component: HelloComponent
+          component: HelloComponent
 
         router = new Arda.Router(Arda.DefaultLayout, document.body)
         router.pushContext(HelloContext, {})
@@ -67,7 +67,7 @@ describe "src/component", ->
   describe '#createContextOnNode', ->
     it 'create context', (done) ->
       class Context extends Arda.Context
-        @component: class Component extends Arda.Component
+        component: class Component extends Arda.Component
           componentDidMount: ->
             done()
           render: ->

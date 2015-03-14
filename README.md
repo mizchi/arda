@@ -45,7 +45,7 @@ class Clicker extends Arda.Component
   onClick: -> @dispatch 'clicker:++'
 
 class ClickerContext extends Arda.Context
-  @component: Clicker
+  component: Clicker
   initState: (props) -> cnt: 0
   expandComponentProps: (props, state) -> cnt: state.cnt
   delegate: (subscribe) ->
@@ -93,7 +93,7 @@ subscriber = (context, subscribe) ->
   subscribe 'context:disposed', -> console.log 'disposed'
 
 class MyContext extends Arda.Context
-  @component: MyComponent
+  component: MyComponent
   subscribers: [subscriber]
 ```
 
