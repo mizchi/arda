@@ -111,10 +111,12 @@ interface State {age: number;}
 interface ComponentProps {greeting: string;}
 
 class MyContext extends Arda.Context<Props, State, ComponentProps> {
-  static component = React.createClass({
-    mixins: [Arda.mixin],
-    render: function(){return React.createElement('h1', {}, this.props.greeting);}
-  });
+  get component() {
+    return React.createClass({
+      mixins: [Arda.mixin],
+      render: function(){return React.createElement('h1', {}, this.props.greeting);}
+    });
+  }
 
   initState(props){
     // Can use promise  (State | Promise<State>)
