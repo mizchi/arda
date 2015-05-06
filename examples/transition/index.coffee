@@ -4,13 +4,15 @@ Arda = require '../../src/'
 
 class MainContext extends Arda.Context
   component:
-    class Main extends Arda.Component
+    Main = React.createClass
+      mixins: [Arda.mixin]
       render: ->
         React.createElement 'h1', {}, 'Main'
 
 class SubContext extends Arda.Context
   component:
-    class Sub extends Arda.Component
+    Sub = React.createClass
+      mixins: [Arda.mixin]
       render: ->
         React.createElement 'h1', {}, 'Sub'
 
