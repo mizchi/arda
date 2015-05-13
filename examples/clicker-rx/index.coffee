@@ -3,7 +3,8 @@ window.Promise = require 'bluebird'
 window.Rx = require 'rx'
 Arda = require '../../src/'
 
-class Clicker extends Arda.Component
+Clicker = React.createClass
+  mixins: [Arda.mixin]
   render: ->
     React.createElement 'button', {onClick: @onClick.bind(@)}, 'double click me'
 
