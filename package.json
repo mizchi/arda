@@ -2,6 +2,7 @@
   "name": "arda",
   "version": "0.13.1",
   "description": "",
+  "repository": "mizchi/arda",
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "$(npm bin)/coffee -o lib -c src/*",
