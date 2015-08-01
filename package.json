@@ -11,6 +11,9 @@
   },
   "author": "",
   "license": "MIT",
+  "typescript": {
+    "definition": "arda.d.ts"
+  },
   "dependencies": {},
   "devDependencies": {
     "bluebird": "^2.9.6",
