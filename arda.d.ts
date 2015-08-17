@@ -43,6 +43,13 @@ declare module Arda {
     templateProps: ComponentProps;
   }> {}
 
+  export class DispatcherButton {
+    props: {
+      event: string;
+      args: any[];
+    }
+  }
+
   export class Context<Props, State, ComponentProps> {
     // root component of this context
     component: typeof Component;

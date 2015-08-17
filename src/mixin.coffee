@@ -1,9 +1,12 @@
+DispatcherButton = require './dispatcher-button'
 module.exports =
   contextTypes:
     shared: React.PropTypes.any
 
   dispatch: ->
     @context.shared.emit arguments...
+
+  DispatcherButton: DispatcherButton
 
   createChildRouter: (node) ->
     Router = require './router'

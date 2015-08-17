@@ -101,6 +101,30 @@ class MyContext extends Arda.Context
 
 static `subscribers` is automatic delegator on instantiate.
 
+## DispatcherButton
+
+This is just utility ReactElement.
+
+```coffee
+{DispatcherButton} = arda
+React.createClass
+  mixins: [Arda.mixin]
+  render: ->
+    React.createElement 'div', {}, [
+      React.createElement DispatcherButton, {
+        event: 'foo-event'
+        args: ['foo-id-12345']
+      }, 'foo' # => button foo
+      React.createElement DispatcherButton, {
+        event: 'foo-event'
+        args: ['foo-id-**']
+        className: 'custome-button'
+      }, [
+        React.createElement 'span', {}, 'text'
+      ] # => span.custome-button > span text
+    ]
+```
+
 ## with TypeScript
 
 To achive purpose to make mutable state typesafe, Arda with TypeScript is better than other AltJS.
