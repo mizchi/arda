@@ -3,7 +3,7 @@ $ = React.createElement
 
 module.exports =
 class Router extends EventEmitter
-  # React.Class * ?HTMLElement => Router
+  # React.Class * ?HTMLElement| (e: ReactComponentClass) => ReactComponent  => Router
   constructor: (layoutComponent, @_elOrMountFunc)->
     @history = []
     @_max_history = null
@@ -11,20 +11,20 @@ class Router extends EventEmitter
     @_disposers = []
     if @_elOrMountFunc
       if @_elOrMountFunc instanceof Function
-        @_rootComponent = @_elOrMountFunc layoutComponent
+        @_rootComponent = @_elOrMountFunc $(layoutComponent, {})
       else
         @_rootComponent = React.render $(layoutComponent, {}), @_elOrMountFunc
       @_rootComponent.isRoot = true
 
-  setMaxHistory: (_max_history) ->
+  setMaxHistory: (_max_history) =>
     if _max_history < 1
       throw new Error 'setMaxHistory need more than 1'
     @_max_history = _max_history
 
   # () => boolean
-  isLocked: -> @_locked
+  isLocked: => @_locked
 
-  dispose: ->
+  dispose: =>
     Promise.all @_disposers.map (disposer) => do disposer
     .then => new Promsie (done) =>
       do popUntilBlank = =>
@@ -43,14 +43,14 @@ class Router extends EventEmitter
         React.unmountComponentAtNode(@_elOrMountFunc)
       @emit 'router:disposed'
 
-  pushContextAndWaitForBack: (contextClass, initialProps = {}) ->
+  pushContextAndWaitForBack: (contextClass, initialProps = {}) =>
     new Promise (done) =>
       @pushContext(contextClass, initialProps)
       .then (context) =>
         context.on 'context:disposed', done
 
   # typeof Context => Thenable<Boolean>
-  pushContext: (contextClass, initialProps = {}) ->
+  pushContext: (contextClass, initialProps = {}) =>
     @_lock()
 
     # check
@@ -81,7 +81,7 @@ class Router extends EventEmitter
       @activeContext
 
   # () => Thenable<void>
-  popContext: ->
+  popContext: =>
     if @history.length <= 0
       throw 'history stack is null'
 
@@ -112,7 +112,7 @@ class Router extends EventEmitter
       @activeContext
 
   # () => Thenable<Context>
-  replaceContext: (contextClass, initialProps = {}) ->
+  replaceContext: (contextClass, initialProps = {}) =>
     if @history.length <= 0
       throw 'history stack is null'
     @_lock()
@@ -140,30 +140,33 @@ class Router extends EventEmitter
       @activeContext
 
   #  Context * Object  => Thenable<void>
-  _mountToParent: (context, initialProps, reuseState = false) ->
+  _mountToParent: (context, initialProps, reuseState = false) =>
     @_initContextWithExpanding(context, initialProps, reuseState)
     .then (templateProps) =>
       @_outputByEnv(context, templateProps)
 
   #  () => Thenable<void>
-  _unmountAll: ->
+  _unmountAll: =>
     @_outputByEnv(null)
 
   #  React.Element => Thenable<void>
-  _outputByEnv: (activeContext, props) ->
+  _outputByEnv: (activeContext, props) =>
     if @_elOrMountFunc?
       @_distributeProps(activeContext, props)
     else
       @_outputToRouterInnerHTML(activeContext, props)
 
-  _distributeProps: (activeContext, props) ->
-    @_rootComponent.setState
-      # activeContext: activeContext?.render(props)
-      activeContext: activeContext
-      templateProps: props
+  _distributeProps: (activeContext, props) =>
+    # TODO: now Arda grasp setState error.
+    # In react-blessed example, first transition failed. I can't guess why yet.
+    # ref. http://stackoverflow.com/questions/27153166/typeerror-when-using-react-cannot-read-property-firstchild-of-undefined
+    try
+      @_rootComponent.setState
+        activeContext: activeContext
+        templateProps: props
 
   # For test dry run
-  _outputToRouterInnerHTML: (activeContext, templateProps) ->
+  _outputToRouterInnerHTML: (activeContext, templateProps) =>
     if activeContext
       rendered = React.createFactory(activeContext.component)(templateProps)
       @innerHTML = React.renderToString rendered
@@ -174,7 +177,7 @@ class Router extends EventEmitter
 
   _lock: -> @_locked = true
 
-  _disposeContext: (context) ->
+  _disposeContext: (context) =>
     delete context.props
     delete context.state
     context.emit 'context:disposed'
@@ -184,7 +187,7 @@ class Router extends EventEmitter
     context.disposed = true
     Object.freeze(context)
 
-  _initContextWithExpanding: (context, props, reuseState = false) ->
+  _initContextWithExpanding: (context, props, reuseState = false) =>
     if context.state? and reuseState
       Promise.resolve(
         context.expandComponentProps(context.props, context.state)

@@ -5,7 +5,7 @@ declare module Arda {
     // mount on element with layout component
     // example.
     //    new Arda.Router(Arda.DefaultLayout, document.body);
-    constructor(layout: typeof Component, el: HTMLElement);
+    constructor(layout: typeof Component, elOrMountFunc: HTMLElement | Function);
 
     // history push with promise
     // example.
