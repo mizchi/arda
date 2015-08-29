@@ -1,0 +1,15 @@
+{
+  "name": "blessed",
+  "version": "1.0.0",
+  "description": "``` sh build.sh open index.html ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "blessed": "0.1.14",
+    "@mizchi/react-blessed": "0.0.2"
+  }
+}
