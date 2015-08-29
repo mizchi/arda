@@ -1,16 +1,25 @@
 EventEmitter = require './event-emitter'
+$ = React.createElement
+
 module.exports =
 class Router extends EventEmitter
   # React.Class * ?HTMLElement => Router
-  constructor: (layoutComponent, @el)->
+  constructor: (layoutComponent, @_elOrMountFunc)->
+    @history = []
+    @_max_history = null
     @_locked = false
     @_disposers = []
-    @history = []
-
-    if @el
-      Layout = React.createFactory(layoutComponent)
-      @_rootComponent = React.render Layout(), @el
+    if @_elOrMountFunc
+      if @_elOrMountFunc instanceof Function
+        @_rootComponent = @_elOrMountFunc layoutComponent
+      else
+        @_rootComponent = React.render $(layoutComponent, {}), @_elOrMountFunc
       @_rootComponent.isRoot = true
+
+  setMaxHistory: (_max_history) ->
+    if _max_history < 1
+      throw new Error 'setMaxHistory need more than 1'
+    @_max_history = _max_history
 
   # () => boolean
   isLocked: -> @_locked
@@ -30,8 +39,8 @@ class Router extends EventEmitter
       delete @_disposers
       @removeAllListeners()
       Object.freeze(@)
-      if @el?
-        React.unmountComponentAtNode(@el)
+      if @_elOrMountFunc? and not (@_elOrMountFunc instanceof Function)
+        React.unmountComponentAtNode(@_elOrMountFunc)
       @emit 'router:disposed'
 
   pushContextAndWaitForBack: (contextClass, initialProps = {}) ->
@@ -56,6 +65,13 @@ class Router extends EventEmitter
         name: contextClass.name
         props: initialProps
         context: @activeContext
+
+      # dispose context that is out of cache
+      if @_max_history? and @history.length > @_max_history
+        willDisposeHistory = @history.shift()
+        if willDisposeHistory
+          @_disposeContext(willDisposeHistory.context)
+
       @_unlock()
       @activeContext.emit 'context:created'
       @activeContext.emit 'context:started'
@@ -135,12 +151,12 @@ class Router extends EventEmitter
 
   #  React.Element => Thenable<void>
   _outputByEnv: (activeContext, props) ->
-    if @el?
-      @_outputToDOM(activeContext, props)
+    if @_elOrMountFunc?
+      @_distributeProps(activeContext, props)
     else
       @_outputToRouterInnerHTML(activeContext, props)
 
-  _outputToDOM: (activeContext, props) ->
+  _distributeProps: (activeContext, props) ->
     @_rootComponent.setState
       # activeContext: activeContext?.render(props)
       activeContext: activeContext

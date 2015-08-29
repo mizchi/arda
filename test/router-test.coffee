@@ -70,6 +70,24 @@ describe "src/router", ->
       router.pushContext(TestContext, {name: 'john'}).then ->
         assert $$(router.innerHTML)('.name').text() is 'my name is john foo bar'
 
+    it "will dispose context that is out of cache", (done) ->
+      class TestContext extends Arda.Context
+        component: React.createClass
+          mixins: [Arda.mixin]
+          # componentWillMount: -> done()
+          render: -> React.createElement 'div', {}, 'test'
+      router = new Arda.Router Arda.DefaultLayout, null
+      router.setMaxHistory(1)
+      c1 = null
+      router.pushContext(TestContext, {})
+      .then (context) ->
+        c1 = context
+        router.pushContext(TestContext, {})
+      .then (context) ->
+        assert.ok c1.disposed
+        assert router.history.length is 1
+        done()
+
   describe '#popContext', ->
     it "throws at blank", (done) ->
       router = new Arda.Router Arda.DefaultLayout, null
