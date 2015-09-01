@@ -11,9 +11,6 @@
   },
   "author": "",
   "license": "MIT",
-  "typescript": {
-    "definition": "arda.d.ts"
-  },
   "dependencies": {},
   "devDependencies": {
     "@mizchi/router": "0.0.2",
