@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 const Arda = require('../../node')(React);
 global.Arda = Arda;
 
-import {render, renderComponent} from '@mizchi/react-blessed';
+import {render} from 'react-blessed';
+import blessed from 'blessed';
 import Layout from './layout';
 import FooContext from './foo-context';
 
@@ -55,36 +56,30 @@ class AppContext extends Arda.Context {
   }
 };
 
-let screen;
-let context;
+let screen = blessed.screen({
+  autoPadding: true,
+  smartCSR: true,
+  title: 'react-blessed hello world'
+});
+screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+  return process.exit(0);
+});
+
 const router = new Arda.Router(Layout, (el) => {
-  screen = render(el, {
-    autoPadding: true,
-    smartCSR: true,
-    title: 'react-blessed hello world'
-  });
-  screen.key(['escape', 'q', 'C-c'], function(ch, key) {
-    return process.exit(0);
-  });
-
-  screen.key(['a'], function(ch, key) {
-    // router.pushContext(AppContext, {});
-    // console.log('a aaa')
-    const c = context.getActiveComponent();
-    c.incrementCounter();
-  });
-
+  let component = render(el, screen);
   screen.key(['b'], function(ch, key) {
     router.pushContext(FooContext, {});
   });
 
-  return screen._component;
+  return component;
 });
 
 router.pushContext(AppContext, {})
-.then(_context => {
-  // cons
-  context = _context;
+.then(context => {
+  screen.key(['a'], function(ch, key) {
+    const c = context.getActiveComponent();
+    c.incrementCounter();
+  });
 })
 .catch(e => {
   console.log('error', e.stack);

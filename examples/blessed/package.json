@@ -10,6 +10,6 @@
   "license": "ISC",
   "devDependencies": {
     "blessed": "0.1.14",
-    "@mizchi/react-blessed": "0.0.2"
+    "react-blessed": "0.1.0"
   }
 }
