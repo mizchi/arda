@@ -281,7 +281,7 @@ See [example with react-blessed](/examples/blessed)
 
 ## API
 
-See detail at [arda.d.ts](arda.d.ts)
+See detail at [index.d.ts](index.d.ts)
 
 ## LICENSE
 
