@@ -1,6 +1,6 @@
-# Arda HelloWorld Example
+# Arda example with blessed
 
 ```
-sh build.sh
-open index.html
+npm install
+$(npm bin)/babel-node index.js
 ```

@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel": "5.8.23",
     "blessed": "0.1.14",
     "react-blessed": "0.1.0"
   }
