@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "noImplicitAny": false,
+        "out": "index.js",
+        "rootDir": "."  ,
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

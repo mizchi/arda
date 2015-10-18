@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v0.17.0
+
+- Support React 0.14
+- Rewrite all with Babel from scratch
+- Rename API
+  - Router -> Stacker
+  - Context -> Scene
+  - Router#pushState -> Stacker#pushScene
+  - Router#popState -> Stacker#popScene
+  - Router#replaceState -> Stacker#replaceScene
+- Deprecated: Context#subscribers, subscribe. Use constructor
+
 ## v0.13
 
 - Now occuring warnings again. Roolback internal to avoid nested case.

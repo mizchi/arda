@@ -8,71 +8,58 @@ Meta-Flux framework for real world.
 $ npm install arda --save
 ```
 
-## Concept
+## Dependencies
 
-Today's Flux is weak at scene transitions. Arda make it simple by `router` and `context`(chunk of flux).
-
-Context has Flux features and its stack is very simple.
-
-- Dispatcher is just EventEmitter
-- View is just React.Component (with mixin)
-- Store should be covered by typesafe steps with promise
-
-I need to develop to make my company's react project simple. Arda is started from extraction of my works and well dogfooded. Thx [Increments Inc.](https://github.com/increments "Increments Inc.")
-
+- React v0.14.0 >=
+- Promise or its poryfill
+- `require('babel/polyfill')`
 
 ## Goals
 
-- Transition with Promise
-- Loose coupling and testable
-- *TypeScript*, *CoffeeScript*, and *ES6* friendly
+- Transition Scenes with Promise
+- *TypeScript* and *ES6* friendly
 - Protect mutable state and make it atomic.
 
-## Intro
-
-Context, it extends way of react, is just one flux loop and has data flow, `Props => State => ComponentProps`
-
-simple example
+## Example
 
 ```js
 window.React = require('react');
-var Arda = require('../../lib');
+const Dom = require('react-dom');
+require('babel/polyfill');
+const {Stacker, Scene, mixin} = require('../../src/');
+
 var Clicker = React.createClass({
-  mixins: [Arda.mixin],
+  mixins: [mixin],
   render() {
-    return React.createElement('button', {onClick: this.onClick.bind(this)}, this.props.cnt);
+    return <button onClick={this.onClick}>{this.props.cnt}</button>;
   },
   onClick() {
-    this.dispatch('hello:++');
+    this.dispatch('++');
   }
 });
 
-class ClickerContext extends Arda.Context {
-  get component() {
-    return Clicker;
-  }
-
-  initState() {
+class ClickerScene extends Scene {
+  static get component() {return Clicker;}
+  initQuery() {
     return {cnt: 0};
   }
 
-  expandComponentProps(props, state) {
-    return {cnt: state.cnt};
+  expandProps() {
+    return {cnt: this.query.cnt};
   }
 
-  delegate(subscribe) {
-    super.delegate();
-    subscribe('context:created', () => console.log('created'));
-    subscribe('hello:++', () =>
-      this.update((s) => { return {cnt: s.cnt+1}; })
-    );
+  constructor(...args) {
+    super(...args);
+    this.subscribe('++', () => this.updateQuery(s => ({cnt: s.cnt+1})));
   }
 };
 
-window.addEventListener('DOMContentLoaded', () => {
-  var router = new Arda.Router(Arda.DefaultLayout, document.body);
-  router.pushContext(ClickerContext, {});
+const target = document.querySelector('.content')
+const router = new Stacker(el => {
+  return Dom.render(el, target);
 });
+
+router.pushScene(new ClickerScene({}))
 ```
 
 ![](http://i.gyazo.com/7b2dffed4f296beddc8a305270db884a.png)
@@ -83,205 +70,100 @@ Arda.Router has `pushContext`, `popContext` and `replaceContext` and return prom
 
 (coffeescript)
 
-```coffee
-router = new Arda.Router(Arda.DefaultLayout, document.body)
-router.pushContext(MainContext, {})             # Main
-.then => router.pushContext(SubContext, {})     # Main, Sub
-.then => router.pushContext(MainContext, {})    # Main, Sub, Main
-.then => router.popContext()                    # Main, Sub
-.then => router.replaceContext(MainContext, {}) # Main, Main
-.then => console.log router.history
+```js
+const router = new Stacker(el => {
+  return Dom.render(el, document.body);
+});
+(async () => {
+  router.pushScene(new Main)          # Main
+  await router.pushScene(new Sub)     # Main, Sub
+  await router.pushScene(new Main)    # Main, Sub, Main
+  await router.popScene()             # Main, Sub
+  await router.replaceScene(new Main) # Main, Main
+  console.log(router.history);
+})();
 ```
 
-`pushContext` and `replsceContext`'s second argument is to be context.props as immutable object.
+`pushScene` and `replsceScene`'s second argument is to be context.props as immutable object.
 
 ## LifeCycle
 
-(coffeescript)
-
-```coffee
-subscriber = (context, subscribe) ->
-  subscribe 'context:created', -> console.log 'created'
-  subscribe 'context:started', -> console.log 'started'
-  subscribe 'context:paused', -> console.log 'paused'
-  subscribe 'context:resumed', -> console.log 'resumed'
-  subscribe 'context:disposed', -> console.log 'disposed'
-
-class MyContext extends Arda.Context
-  component: MyComponent
-  subscribers: [subscriber]
+```js
+class MyScene extends Arda.Scene {
+  constructor() {
+    super();
+    this.subscribe('scene:created',  () => console.log('created'));
+    this.subscribe('scene:started',  () => console.log('started'));
+    this.subscribe('scene:paused',   () => console.log('paused'));
+    this.subscribe('scene:resumed',  () => console.log('resumed'));
+    this.subscribe('scene:disposed', () => console.log('disposed'));
+  }
+}
 ```
 
+(old api)
 ![](http://i.gyazo.com/ff7ddb2643ea4d1587f1ce236da0f918.png)
-
-static `subscribers` is automatic delegator on instantiate.
-
-## DispatcherButton
-
-This is just utility ReactElement.
-
-(coffeescript)
-
-```coffee
-{DispatcherButton} = arda
-React.createClass
-  mixins: [Arda.mixin]
-  render: ->
-    React.createElement 'div', {}, [
-      React.createElement DispatcherButton, {
-        event: 'foo-event'
-        args: ['foo-id-12345']
-      }, 'foo' # => button foo
-      React.createElement DispatcherButton, {
-        event: 'foo-event'
-        args: ['foo-id-**']
-        className: 'custome-button'
-      }, [
-        React.createElement 'span', {}, 'text'
-      ] # => span.custome-button > span text
-    ]
-```
 
 ## with TypeScript
 
 To achive purpose to make mutable state typesafe, Arda with TypeScript is better than other AltJS.
 
 ```javascript
-interface Props {firstName: string; lastName: string;}
-interface State {age: number;}
-interface ComponentProps {greeting: string;}
+///<reference path='../../index.d.ts' />
+declare var require: any;
+declare var global: any;
+declare var React: any;
+require("babel/polyfill");
+global.React = require("react");
+global.Arda = require("../../src");
+const {Scene, Stacker, Component} = Arda;
+const Dom = require("react-dom");
 
-class MyContext extends Arda.Context<Props, State, ComponentProps> {
-  get component() {
-    return React.createClass({
-      mixins: [Arda.mixin],
-      render: function(){return React.createElement('h1', {}, this.props.greeting);}
-    });
-  }
+interface MyComponentProps {greeting: string;}
 
-  initState(props){
-    // Can use promise  (State | Promise<State>)
-    return new Promise<State>(done => {
-      setTimeout(done({age:10}), 1000)
-    })
-  }
-  expandComponentProps(props, state) {
-    // Can use promise  (ComponentProps | Promise<ComponentProps>)
-    return {greeting: 'Hello, '+props.firstName+', '+state.age+' years old'}
+class MyComponent extends Component<MyComponentProps, {}> {
+  render(){
+    return React.createElement("h1", {}, this.props.greeting);
   }
 }
 
-var router = new Arda.Router(Arda.DefaultLayout, document.body);
-// Unfortunately, initial props by router are not validated yet
-// If you want, you can create your original router wrapper
-router.pushContext(MyContext, {firstName: 'Jonh', lastName: 'Doe'})
-.then(context => {
-  setInterval(() => {
-    context.state(state => {age: state.age+1}) // this is validated
-  }, 1000 * 60 * 60 * 24 * 360) // fire once by each year haha:)
+class MyScene extends Scene<{
+  firstName: string; lastName: string;
+}, {
+  age: number;
+}
+, MyComponentProps
+> {
+  static get component() {
+    return MyComponent;
+  }
+
+  initQuery(){
+    return {age: 10};
+  }
+
+  expandProps() {
+    return {greeting: `Hello, ${this.initializers.firstName}, ${this.query.age} years old`}
+  }
+}
+
+const target = document.querySelector(".content");
+const router = new Stacker( (el: any) => {
+  return Dom.render(el, target);
 });
+router.pushScene(new MyScene({firstName: "Jonh", lastName: "Doe"}))
+.then(s => {
+  setInterval(() => {
+    s.updateQuery(q => ({age: q.age+1}))
+  }, 1000);
+})
 ```
 
 See [typescript working example](examples/typescript/index.ts)
 
-Or see mizchi's starter project[mizchi-sandbox/arda-starter-project](https://github.com/mizchi-sandbox/arda-starter-project "mizchi-sandbox/arda-starter-project")
-
-## Custom Layout (Advanced)
-
-Arda provide default layout to use. It can resolve most cases.
-
-But occationaly you need custom layout.
-
-example.
-
-```js
-const Layout = React.createClass({
-  childContextTypes: {
-    shared: React.PropTypes.object
-  },
-  contextTypes: {
-    ctx: React.PropTypes.object
-  },
-
-  getChildContext() {
-    return {shared: this.getContext()};
-  },
-
-  getContext() {
-    return this.state.activeContext || this.context.shared;
-  },
-
-  getInitialState() {
-    return {
-      activeContext: null,
-      templateProps: {}
-    };
-  },
-
-  render() {
-    if (this.state.activeContext != null) {
-      this.state.templateProps.ref = 'root';
-      return React.createElement(
-        this.state.activeContext.component,
-        this.state.templateProps
-      );
-    } else {
-      return <div/>
-    }
-  }
-})
-
-// use it!
-const router = new Arda.Router(Layout, document.body);
-```
-
-Custom layout is required some implementations.
-
-- implement contextTypes.shared
-- implement childContextTypes.ctx
-- implement getChildContext() to return contextTypes.shared
-- implement getInitialState() to fill contextTypes.
-- optional: render initial case and use context propeties
-
-This implement resolve dispatch mixin behaviour.
-
-Perhaps you can resolve by Copy and Paste and edit manually.
-
-## Custom Renderer (Advanced)
-
-Initialize in node.js to use custom renderer.
-
-```js
-const React = require('react')
-const Arda = require('arda/node')(React);
-const {render} from '@mizchi/react-blessed';
-
-// you should prepare custom layout for its environment
-// and function to get root component
-// (el: ReactElement) => ReactComponent
-const router = new Arda.Router(Layout, layout => {
-  const screen = render(layout, {
-    autoPadding: true,
-    smartCSR: true,
-    title: 'react-blessed hello world'
-  });
-  screen.key(['escape'], () => process.exit(0));
-  return screen._component;
-});
-
-```
-
-custom layout hs to fill contextTypes specs.
-See [example with react-blessed](/examples/blessed)
-
-## Dependencies
-
-- React v0.14.0-beta3 >=
-- Promise or its poryfill
-
 ## API
 
-See detail at [arda.d.ts](arda.d.ts)
+See detail at [index.d.ts](index.d.ts)
 
 ## LICENSE
 

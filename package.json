@@ -5,26 +5,22 @@
   "repository": "mizchi/arda",
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "$(npm bin)/coffee -o lib -c src/*",
-    "build": "$(npm bin)/coffee -o lib -c src/*",
-    "test": "$(npm bin)/mocha --require espower-coffee/guess test/*.coffee -t 100"
+    "test": "$(npm bin)/ava",
+    "prepublish": "babel src --out-dir lib"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {},
+  "peerDependencies": {
+    "react": "0.14.*",
+    "react-dom": "0.14.*"
+  },
   "devDependencies": {
-    "@mizchi/router": "0.0.2",
+    "ava": "^0.2.0",
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.0",
     "babelify": "^6.2.0",
     "bluebird": "^2.9.6",
-    "cheerio": "^0.18.0",
-    "coffee-script": "^1.9.0",
-    "coffeeify": "^1.0.0",
-    "espower-coffee": "^0.10.0",
-    "jsdom": "^4.0.2",
-    "mocha": "^2.1.0",
-    "power-assert": "^0.10.1",
-    "react": "0.13.0",
-    "sinon": "^1.12.2",
-    "source-map-support": "^0.2.9"
+    "jsdom": "^4.0.2"
   }
 }

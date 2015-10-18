@@ -1,43 +1,47 @@
-///<reference path='typings/bundle.d.ts' />
-///<reference path='../../arda.d.ts' />
-
+///<reference path='../../index.d.ts' />
+declare var require: any;
+declare var global: any;
 declare var React: any;
-global.React = require('react');
-//global.Promise = require('bluebird');*/
-global.Arda = require('../../lib');
+require("babel/polyfill");
+global.React = require("react");
+global.Arda = require("../../src");
+const {Scene, Stacker, Component} = Arda;
+const Dom = require("react-dom");
 
-interface Props {firstName: string; lastName: string;}
-interface State {age: number;}
-interface ComponentProps {greeting: string;}
+interface MyComponentProps {greeting: string;}
 
-class MyContext extends Arda.Context<Props, State, ComponentProps> {
-  get component() {
-    return React.createClass({
-      mixins: [Arda.mixin],
-      render: function(){return React.createElement('h1', {}, this.props.greeting);}
-    });
-  }
-
-  initState(props){
-    // Can use promise  (State | Promise<State>)
-    return new Promise<State>(done => {
-      setTimeout(done({age:10}), 1000)
-    })
-  }
-  expandComponentProps(props, state) {
-    // Can use promise  (ComponentProps | Promise<ComponentProps>)
-    return {greeting: 'Hello, '+props.firstName+', '+state.age+' years old'}
+class MyComponent extends Component<MyComponentProps, {}> {
+  render(){
+    return React.createElement("h1", {}, this.props.greeting);
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  var router = new Arda.Router(Arda.DefaultLayout, document.body);
-  // Unfortunately, initial props by router are not validated yet
-  // If you want, you can create your original router wrapper
-  router.pushContext(MyContext, {firstName: 'Jonh', lastName: 'Doe'})
-  .then(context => {
-    setInterval(() => {
-      context.state(state => {age: state.age+1}) // this is validated
-    }, 1000 * 60 * 60 * 24 * 360) // fire once by each year haha:)
-  })
+class MyScene extends Scene<{
+  firstName: string; lastName: string;
+}, {
+  age: number;
+}
+, MyComponentProps> {
+  static get component() {
+    return MyComponent;
+  }
+
+  initQuery(){
+    return {age: 10};
+  }
+
+  expandProps() {
+    return {greeting: `Hello, ${this.initializers.firstName}, ${this.query.age} years old`}
+  }
+}
+
+const target = document.querySelector(".content");
+const router = new Stacker( (el: any) => {
+  return Dom.render(el, target);
 });
+router.pushScene(new MyScene({firstName: "Jonh", lastName: "Doe"}))
+.then(s => {
+  setInterval(() => {
+    s.updateQuery(q => ({age: q.age+1})) // this is validated
+  }, 1000) // fire once by each year haha:)
+})
