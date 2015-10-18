@@ -1,4 +1,3 @@
 #!/usr/bin/env
-dtsm install
-tsc -t es6 index.ts
-browserify -o bundle.js index.js
+tsc
+browserify -t babelify index.js -o bundle.js
