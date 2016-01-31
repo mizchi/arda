@@ -93,7 +93,7 @@ router.pushContext(MainContext, {})             # Main
 .then => console.log router.history
 ```
 
-`pushContext` and `replsceContext`'s second argument is to be context.props as immutable object.
+`pushContext` and `replaceContext`'s second argument is to be context.props as immutable object.
 
 ## LifeCycle
 
