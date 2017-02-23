@@ -1,6 +1,6 @@
 {
   "name": "arda",
-  "version": "0.15.1",
+  "version": "0.16.0",
   "description": "Flux with application transition",
   "repository": "mizchi/arda",
   "main": "lib/index.js",

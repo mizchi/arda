@@ -1,12 +1,14 @@
 # Arda
 
-[![Build Status](https://drone.io/github.com/mizchi/arda/status.png)](https://drone.io/github.com/mizchi/arda/latest)
-
 Meta-Flux framework for real world.
 
 ```
 $ npm install arda --save
 ```
+
+## Changelog
+
+- v0.16: Drop React < v15
 
 ## Concept
 
@@ -36,7 +38,7 @@ simple example
 
 ```js
 window.React = require('react');
-var Arda = require('../../lib');
+var Arda = require('arda');
 var Clicker = React.createClass({
   mixins: [Arda.mixin],
   render() {
