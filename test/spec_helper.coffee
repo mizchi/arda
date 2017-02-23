@@ -3,8 +3,6 @@ global.document  = jsdom('<html><body></body></html>')
 global.window    = document.defaultView
 global.navigator = window.navigator
 
-# require('source-map-support').install()
-global.Promise = require 'bluebird'
 global.React   = require 'react'
 global.assert  = require 'power-assert'
 global.sinon   = require 'sinon'

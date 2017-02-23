@@ -15,12 +15,11 @@
   "devDependencies": {
     "@mizchi/router": "0.0.2",
     "babelify": "^6.2.0",
-    "bluebird": "^2.9.6",
     "cheerio": "^0.18.0",
     "coffee-script": "^1.9.0",
     "coffeeify": "^1.0.0",
     "espower-coffee": "^0.10.0",
-    "jsdom": "^4.0.2",
+    "jsdom": "^9.11.0",
     "mocha": "^2.1.0",
     "power-assert": "^0.10.1",
     "react": "0.13.0",
