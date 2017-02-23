@@ -190,7 +190,7 @@ Or see mizchi's starter project[mizchi-sandbox/arda-starter-project](https://git
 
 Arda provide default layout to use. It can resolve most cases.
 
-But occationaly you need custom layout.
+But occasionally you need custom layout.
 
 example.
 
