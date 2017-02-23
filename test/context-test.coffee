@@ -1,6 +1,8 @@
 require './spec_helper'
 Arda = require '../src'
 Context = require '../src/context'
+React = require 'react'
+ReactDOM = require 'react-dom'
 
 describe "src/context", ->
   describe '#update', ->
@@ -63,7 +65,7 @@ describe "src/context", ->
             React.createElement 'h1', {}, 'Parent'
             child.render({})
           ]
-      React.render React.createFactory(Parent)({}), document.body
+      ReactDOM.render React.createFactory(Parent)({}), document.body
       assert document.body.innerHTML.indexOf('Parent') > -1
       assert document.body.innerHTML.indexOf('Child') > -1
 
@@ -81,6 +83,6 @@ describe "src/context", ->
             React.createElement 'h1', {}, 'Parent'
             child.render({})
           ]
-      React.render React.createFactory(Parent)({}), document.body
+      ReactDOM.render React.createFactory(Parent)({}), document.body
       assert document.body.innerHTML.indexOf('Parent') > -1
       assert document.body.innerHTML.indexOf('Child') > -1

@@ -43,6 +43,7 @@ describe "src/router", ->
       router = new Arda.Router Arda.DefaultLayout, null
       router.pushContext(TestContext, {name: 'john doe'})
       .then ->
+        console.log('router', router)
         assert $$(router.innerHTML)('.name').text() is 'my name is john doe'
 
     it "will render template with initState and expandComponentProps", ->

@@ -1,3 +1,4 @@
+React = require 'react'
 DispatcherButton = require './dispatcher-button'
 module.exports =
   contextTypes:

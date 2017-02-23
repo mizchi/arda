@@ -12,6 +12,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {},
+  "peerDdependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
   "devDependencies": {
     "@mizchi/router": "0.0.2",
     "babelify": "^6.2.0",
@@ -22,7 +26,8 @@
     "jsdom": "^9.11.0",
     "mocha": "^2.1.0",
     "power-assert": "^0.10.1",
-    "react": "0.13.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
     "sinon": "^1.12.2",
     "source-map-support": "^0.2.9"
   }

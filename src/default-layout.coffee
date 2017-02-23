@@ -1,3 +1,4 @@
+React = require 'react'
 T = React.PropTypes
 module.exports = React.createClass
   childContextTypes:

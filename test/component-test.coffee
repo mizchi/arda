@@ -1,6 +1,9 @@
 require './spec_helper'
 Arda = require '../src'
 
+React = require 'react'
+ReactDOM = require 'react-dom'
+
 describe "src/component", ->
   describe '#dispatch', ->
     it 'use shared context emitter', (done) ->
@@ -54,7 +57,7 @@ describe "src/component", ->
       TestComponent = React.createClass
         mixins: [Arda.mixin]
         componentDidMount: ->
-          subRouter = @createChildRouter @refs.container.getDOMNode()
+          subRouter = @createChildRouter @refs.container
           assert subRouter instanceof Arda.Router
           done()
 
@@ -64,7 +67,7 @@ describe "src/component", ->
           ]
 
       c = React.createFactory(TestComponent)
-      React.render c(), document.body
+      ReactDOM.render c(), document.body
 
   describe '#createContextOnNode', ->
     it 'create context', (done) ->
@@ -79,7 +82,7 @@ describe "src/component", ->
       TestComponent = React.createClass
         mixins: [Arda.mixin]
         componentDidMount: ->
-          @createContextOnNode(@refs.container.getDOMNode(), Context, {})
+          @createContextOnNode(@refs.container, Context, {})
 
         render: ->
           React.createElement 'div', {}, [
@@ -87,4 +90,4 @@ describe "src/component", ->
           ]
 
       c = React.createFactory(TestComponent)
-      React.render c(), document.body
+      ReactDOM.render c(), document.body

@@ -1,4 +1,7 @@
-EventEmitter = require './event-emitter'
+React = require('react')
+ReactDOM = require('react-dom')
+ReactDOMServer = require('react-dom/server')
+EventEmitter = require 'events'
 $ = React.createElement
 
 module.exports =
@@ -13,7 +16,7 @@ class Router extends EventEmitter
       if @_elOrMountFunc instanceof Function
         @_rootComponent = @_elOrMountFunc $(layoutComponent, {})
       else
-        @_rootComponent = React.render $(layoutComponent, {}), @_elOrMountFunc
+        @_rootComponent = ReactDOM.render $(layoutComponent, {}), @_elOrMountFunc
       @_rootComponent.isRoot = true
 
   setMaxHistory: (_max_history) =>
@@ -169,7 +172,7 @@ class Router extends EventEmitter
   _outputToRouterInnerHTML: (activeContext, templateProps) =>
     if activeContext
       rendered = React.createFactory(activeContext.component)(templateProps)
-      @innerHTML = React.renderToString rendered
+      @innerHTML = ReactDOMServer.renderToString rendered
     else
       @innerHTML = ''
 

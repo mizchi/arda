@@ -1,5 +1,5 @@
-# {EventEmitter} = require 'events'
-EventEmitter = require './event-emitter'
+EventEmitter = require 'events'
+React = require 'react'
 
 # Context mixin React.Component
 module.exports =

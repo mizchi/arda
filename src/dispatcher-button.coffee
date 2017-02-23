@@ -1,3 +1,4 @@
+React = require 'react'
 mixin = require './mixin'
 module.exports = React.createClass
   mixins: [mixin]
