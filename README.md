@@ -146,7 +146,7 @@ React.createClass
 
 ## with TypeScript
 
-To achive purpose to make mutable state typesafe, Arda with TypeScript is better than other AltJS.
+To achieve purpose to make mutable state typesafe, Arda with TypeScript is better than other AltJS.
 
 ```javascript
 interface Props {firstName: string; lastName: string;}
